@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.granitech.autoconfig.PersistenceManagerAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.granitech.autoconfig.DBMappingManagerAutoConfiguration

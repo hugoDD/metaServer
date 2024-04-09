@@ -1,0 +1,4 @@
+upload:
+  #支持绝对路径和相对路径，推荐使用绝对路径
+  img-dir: 'img-upload-dir' #相对路径
+  file-dir: 'file-upload-dir' #相对路径

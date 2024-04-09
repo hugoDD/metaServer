@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "upload.img-dir",
+      "type": "java.lang.String",
+      "description": "Description for upload.file-dir."
+    },
+    {
+      "name": "upload.file-dir",
+      "type": "java.lang.String",
+      "description": "Description for upload.img-dir."
+    }
+  ]
+}
