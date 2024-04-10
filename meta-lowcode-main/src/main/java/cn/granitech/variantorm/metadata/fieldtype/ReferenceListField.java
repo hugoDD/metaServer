@@ -19,15 +19,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReferenceListField extends VirtualField {
-    public static final ID[] EMPTY_ID_ARRAY;
+    public static final ID[] EMPTY_ID_ARRAY= new ID[0];;
 
     public String getName() {
         return "ReferenceList";
     }
 
-    static {
-        EMPTY_ID_ARRAY = new ID[0];
-    }
+
 
     public final Object readDBValue(PersistenceManager pm, Field field, ID objectId) {
         throw new UnsupportedOperationException();
@@ -66,8 +64,8 @@ public class ReferenceListField extends VirtualField {
             record.setFieldLabel(fieldName, null);
         } else if (valueObj instanceof List) {
             List<IDName> list = (List)valueObj;
-            record.setFieldValue(fieldName, list);
-            record.setFieldLabel(fieldName, list.stream().map(IDName::getName).collect(Collectors.joining(",")));
+            record.setFieldValue(fieldName, toArrayID(list));
+            record.setFieldLabel(fieldName, joiningIdName(list) );
         } else {
             throw new IllegalArgumentException("invalid data format: ["+valueObj+"]");
         }
@@ -133,4 +131,15 @@ public class ReferenceListField extends VirtualField {
             });
         }
     }
+
+    private  String joiningIdName(List<IDName> idNameList) {
+
+        return idNameList.stream().map(IDName::getName).collect(Collectors.joining(","));
+    }
+
+    private ID[] toArrayID(List<IDName> idNameList) {
+
+        return idNameList.stream().map(IDName::getId).toArray(ID[]::new);
+    }
+
 }

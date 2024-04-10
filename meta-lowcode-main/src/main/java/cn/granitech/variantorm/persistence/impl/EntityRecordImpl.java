@@ -168,8 +168,8 @@ public class EntityRecordImpl implements EntityRecord {
     }
 
     public ID id() {
-        Object a;
-        return (a = this.getValueByFieldName(this.getEntity().getIdField().getName())) instanceof String ? new ID((String)a) : (ID)a;
+        Object a=this.getValueByFieldName(this.getEntity().getIdField().getName());
+        return a  instanceof String ? new ID((String)a) : (ID)a;
     }
 
     public EntityRecord fromJson(String json) {

@@ -71,10 +71,12 @@ public class ReferenceField extends ActualField {
 
     public Object readDBValue(PersistenceManager pm, Field field, ResultSet rs, int index) {
         try {
-            if (rs.wasNull())
+            String idValue = rs.getString(index);
+            if (rs.wasNull()){
                 return null;
+            }
             String str = rs.getString(index + 1);
-            return new IDName(ID.valueOf(rs.getString(index)), str);
+            return new IDName(ID.valueOf(idValue), str);
         } catch (SQLException sQLException) {
             throw new DataAccessException("Get id from ResultSet error", sQLException);
         }

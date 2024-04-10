@@ -163,9 +163,8 @@ public class UserService extends BaseService {
         }
 
         EntityRecord user = this._userCache.get(userId);
-        List<ID> userTeam = user.getFieldValue(OWNER_TEAM);
-        return userTeam;
-//        return (userTeam == null ? new ArrayList<>() : Arrays.asList(userTeam));
+        ID[] userTeam = user.getFieldValue(OWNER_TEAM);
+        return (userTeam == null ? new ArrayList<>() : Arrays.asList(userTeam));
     }
 
     public List<ID> getRoleIDListOfUser(ID userId) {
@@ -174,8 +173,8 @@ public class UserService extends BaseService {
         }
 
         EntityRecord user = this._userCache.get(userId);
-        List<ID> userRoles = user.getFieldValue("roles");
-        return userRoles;
+        ID[] userRoles = user.getFieldValue("roles");
+        return userRoles == null ? new ArrayList<>() : Arrays.asList(userRoles);
     }
 
     public Set<ID> getUserListById(ID id) {
