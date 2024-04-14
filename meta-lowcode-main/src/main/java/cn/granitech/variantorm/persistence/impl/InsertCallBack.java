@@ -19,37 +19,51 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-class G implements ConnectionCallback<ID> {
+class InsertCallBack implements ConnectionCallback<ID> {
     public ID doInConnection(Connection conn) throws SQLException, DataAccessException {
         if (this.entityRecord == null) {
             throw new NullPointerException("record");
         } else if (this.entityRecord.id() != null) {
             throw new IllegalStateException("MetaRecord was already created: record=" + this.entityRecord);
         } else {
-            ID entityCode = ID.newID(this.entityRecord.getEntity().getEntityCode());
+            ID newID = ID.newID(this.entityRecord.getEntity().getEntityCode());
             Collection<Field> fieldSet = this.entityRecord.getEntity().getFieldSet();
 
 
-            boolean primarykeyIsNull = fieldSet.stream().anyMatch(field -> field.getType() == FieldTypes.PRIMARYKEY || field.isNullable() || !this.entityRecord.isNull(field.getName()));
-
-            if (primarykeyIsNull) {
-                return entityCode;
+            Optional<Field> matchField = fieldSet.stream().filter(field -> !(field.getType() == FieldTypes.PRIMARYKEY || field.isNullable() || !this.entityRecord.isNull(field.getName())))
+                    .findFirst();
+//
+            if (matchField.isPresent()) {
+                if (!this.entityRecord.getEntity().getName().equals("MetaEntity")) {
+                    Field field = matchField.get();
+                    throw new IllegalArgumentException("Field '" + field.getLabel() + "(" + field.getName() + ")' can't be null !");
+                }
             }
-
-
-            StringBuilder a = new StringBuilder();
-            int index = 1;
             Dialect dialect = this.pm.getDialect();
-            String quotedIdentifier = dialect.getQuotedIdentifier(this.entityRecord.getEntity().getIdField().getPhysicalName());
-            a.append(quotedIdentifier);
+
+            List<String> fieldList = fieldSet.stream().filter(field -> !this.entityRecord.isNull(field.getName()))
+                    .filter(field -> !field.getType().isVirtual())
+                    .map(Field::getPhysicalName)
+                    .map(dialect::getQuotedIdentifier)
+                    .collect(Collectors.toList());
+//                    .collect(Collectors.joining(","));
+
+            int index = fieldList.size();
+            String idPhysicalName = this.entityRecord.getEntity().getIdField().getPhysicalName();
+            fieldList.add(0,dialect.getQuotedIdentifier(idPhysicalName));
+            String fields = String.join(",",fieldList);
+
 
 
             String var26 = "insert into {0} ({1}) values({2})";
             String identifier = this.pm.getDialect().getQuotedIdentifier(this.entityRecord.getEntity().getPhysicalName());
-            String fields = a.toString();
-            String paramValue = StringHelper.repeat("?,", index - 1) + "?";
+//            String fields = a.toString();
+            String paramValue = StringHelper.repeat("?,", index ) + "?";
 
 
             String sql = MessageFormat.format(var26, identifier, fields, paramValue);
@@ -57,25 +71,13 @@ class G implements ConnectionCallback<ID> {
             PreparedStatement preparedStatement = null;
             try {
                 preparedStatement = conn.prepareStatement(sql);
-                preparedStatement.setString(1, a.toString());
+                preparedStatement.setString(1, newID.toString());
                 int paramIndex = 2;
-                Iterator<Field> var8 = this.entityRecord.getEntity().getFieldSet().iterator();
                 for (Field field : fieldSet) {
-
-                    if (!this.entityRecord.getEntity().getName().equals("MetaEntity")) {
-                        throw new IllegalArgumentException("Field '" + field.getLabel() + "(" + field.getName() + ")' can't be null !");
-                    }
-
-                    String name = field.getName();
-                    if (!this.entityRecord.isNull(name) && !field.getType().isVirtual()) {
-                        ++index;
-                        a.append(",").append(dialect.getQuotedIdentifier(field.getPhysicalName()));
-                    }
-
 
                     FieldType fieldType = field.getType();
                     if (!this.entityRecord.isNull(field.getName()) && !fieldType.isVirtual()) {
-                        fieldType.setParamValue(preparedStatement, paramIndex++, this.entityRecord.getFieldValue(field.getName()), PersistenceManagerImpl.getPersistenceManager(this.pm));
+                        fieldType.setParamValue(preparedStatement, paramIndex++, this.entityRecord.getFieldValue(field.getName()), pm);
                     }
                 }
 
@@ -91,12 +93,12 @@ class G implements ConnectionCallback<ID> {
                 FieldType fieldType = field.getType();
                 System.out.println(fieldType.getName());
                 System.out.println("isVirtual: " + fieldType.isVirtual());
-                fieldType.setParamValue(PersistenceManagerImpl.getPersistenceManager(this.pm), field, entityCode, this.entityRecord.getFieldValue(field.getName()));
+                fieldType.setParamValue(this.pm, field, newID, this.entityRecord.getFieldValue(field.getName()));
             }
 
-            this.entityRecord.setFieldValue(this.entityRecord.getEntity().getIdField().getName(), a);
-            IDName idName = new IDName(entityCode, StringUtils.isEmpty(this.entityRecord.getName()) ? entityCode.toString() : this.entityRecord.getName());
-            PersistenceManagerImpl.getPersistenceManager(this.pm).getQueryCache().updateIDName(idName);
+            this.entityRecord.setFieldValue(this.entityRecord.getEntity().getIdField().getName(), newID);
+            IDName idName = new IDName(newID, StringUtils.isEmpty(this.entityRecord.getName()) ? newID.toString() : this.entityRecord.getName());
+            this.pm.getQueryCache().updateIDName(idName);
             return idName.getId();
 
         }
@@ -105,7 +107,7 @@ class G implements ConnectionCallback<ID> {
     private final PersistenceManagerImpl pm;
     private final EntityRecord entityRecord;
 
-    G(PersistenceManagerImpl pm, EntityRecord entityRecord) {
+    InsertCallBack(PersistenceManagerImpl pm, EntityRecord entityRecord) {
         this.pm = pm;
         this.entityRecord = entityRecord;
     }

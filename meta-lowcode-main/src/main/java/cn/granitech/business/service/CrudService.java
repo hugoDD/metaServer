@@ -256,7 +256,7 @@ public class CrudService extends BaseService {
         Entity entity = this.pm.getMetadataManager().getEntity(entityName);
         boolean isCreated = StringUtils.isBlank(recordId);
         entity.getFieldSet().forEach((field) -> {
-            if (isCreated && !field.isCreatable() || !isCreated && !field.isUpdatable()) {
+            if ((isCreated && !field.isCreatable()) || (!isCreated && !field.isUpdatable())) {
                 dataMap.remove(field.getName());
             }
 

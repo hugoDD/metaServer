@@ -6,7 +6,7 @@ public class MySQLDialect implements Dialect {
         if (identifier == null) {
             throw new NullPointerException("identifier");
         } else {
-            return "`identifier`";
+            return "`"+identifier+"`";
         }
     }
 

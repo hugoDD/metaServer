@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
-class M implements ConnectionCallback<Boolean> {
+class LogicDeleteCallBack implements ConnectionCallback<Boolean> {
     public Boolean doInConnection(Connection conn) throws SQLException, DataAccessException {
         String delSql = "DELETE FROM {0} WHERE {1}";
         String identifier = this.pm.getDialect().getQuotedIdentifier(this.entity.getPhysicalName());
@@ -28,18 +28,14 @@ class M implements ConnectionCallback<Boolean> {
         PreparedStatement preparedStatement = null;
 
         try {
-            try {
                 preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, this.id.getId());
                 if (preparedStatement.executeUpdate() != 1) {
                     return false;
                 }
 
-                PersistenceManagerImpl.getPersistenceManager(this.pm).getQueryCache().deleteIDName(this.id.toString());
-            } catch (SQLException var9) {
-                var9.printStackTrace();
-                throw new cn.granitech.variantorm.exception.DataAccessException(var9);
-            }
+                this.pm.getQueryCache().deleteIDName(this.id.toString());
+
         } catch (Throwable e) {
             SqlHelper.closeStatement(preparedStatement);
             throw e;
@@ -55,7 +51,7 @@ class M implements ConnectionCallback<Boolean> {
     private final Entity entity;
     private final ID id;
 
-    M(PersistenceManagerImpl persistenceManager, Entity entity, ID id) {
+    LogicDeleteCallBack(PersistenceManagerImpl persistenceManager, Entity entity, ID id) {
         this.pm = persistenceManager;
         this.entity = entity;
         this.id = id;

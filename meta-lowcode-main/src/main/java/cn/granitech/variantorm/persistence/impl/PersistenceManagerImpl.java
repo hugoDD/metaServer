@@ -32,7 +32,6 @@ public class PersistenceManagerImpl implements PersistenceManager {
     private QueryCache queryCache;
     private LicenseInfo licenseInfo = LicenseInfo.buildFreeLicense("");
     private final Dialect dialect;
-    private final PersistenceManager persistenceManager;
     private final MetadataManager metadataManager;
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,9 +40,6 @@ public class PersistenceManagerImpl implements PersistenceManager {
         return this.sqlCompiler;
     }
 
-    static  PersistenceManager getPersistenceManager(PersistenceManagerImpl x0) {
-        return x0.persistenceManager;
-    }
 
 
     @Override
@@ -61,8 +57,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     @Override
     public RecordQuery createRecordQuery() {
-        PersistenceManagerImpl persistenceManagerImpl = this;
-        return new RecordQueryImpl(persistenceManagerImpl, persistenceManagerImpl.queryCache);
+        return new RecordQueryImpl(this, this.queryCache);
     }
 
     @Override
@@ -81,7 +76,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
         if (entityName != null && entityName.length > 0 && !entity.getName().equals(entityName[0])) {
             throw new IllegalArgumentException("Mismatch between recordId and entityName!");
         }
-        return this.jdbcTemplate.execute(new M(this, entity, recordId));
+        return this.jdbcTemplate.execute(new LogicDeleteCallBack(this, entity, recordId));
     }
 
     @Override
@@ -103,7 +98,6 @@ public class PersistenceManagerImpl implements PersistenceManager {
         this.dialect = new MySQLDialect();
         this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.persistenceManager = this;
         this.sqlCompiler = sqlCompiler;
     }
 
@@ -120,8 +114,8 @@ public class PersistenceManagerImpl implements PersistenceManager {
     @Override
     public void restore(ID recordId) {
         PersistenceManagerImpl persistenceManagerImpl = this;
-        Entity a = persistenceManagerImpl.metadataManager.getEntity(recordId.getEntityCode());
-        persistenceManagerImpl.jdbcTemplate.execute(new J(this, a, recordId));
+        Entity a = this.metadataManager.getEntity(recordId.getEntityCode());
+        this.jdbcTemplate.execute(new UndeleteCallBack(this, a, recordId));
     }
 
     public PersistenceManagerImpl(DataSource dataSource) {
@@ -132,9 +126,8 @@ public class PersistenceManagerImpl implements PersistenceManager {
         this.dialect = new MySQLDialect();
         this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.persistenceManager = this;
         this.sqlCompiler = new SqlCompilerImpl();
-        this.queryCache = new QueryCacheImpl(this.persistenceManager);
+        this.queryCache = new QueryCacheImpl(this);
     }
 
     @Override
@@ -149,7 +142,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     @Override
     public ID insert(EntityRecord record) {
-        return this.jdbcTemplate.execute(new G(this, record));
+        return this.jdbcTemplate.execute(new InsertCallBack(this, record));
     }
 
     @Override
@@ -159,8 +152,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     @Override
     public DataQuery createDataQuery() {
-        PersistenceManagerImpl persistenceManagerImpl = this;
-        return new DataQueryImpl(persistenceManagerImpl, persistenceManagerImpl.queryCache);
+        return new DataQueryImpl(this, this.queryCache);
     }
 
 
