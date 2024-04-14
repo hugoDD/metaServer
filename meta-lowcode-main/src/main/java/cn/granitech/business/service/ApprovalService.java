@@ -474,7 +474,7 @@ public class ApprovalService extends BaseService {
     }
 
     public List<ID> getApproverUserIdsByNodeType(int nodeRoleType, List<NodeRole> nodeRoleList, EntityRecord entityRecord, int deptLevel) {
-        List<ID> approveUserIds = new ArrayList();
+        List<ID> approveUserIds = new ArrayList<>();
         switch (nodeRoleType) {
             case 2:
                 approveUserIds.add(entityRecord.getFieldValue("createdBy"));

@@ -25,10 +25,10 @@ public class EasySQLHelper {
         if (!StringUtils.isBlank(querySchema.getSort())) {
             sql.append(String.format("ORDER BY %s ", querySchema.getSort()));
         }
-        if (pagination != null) {
-            int offset = (pagination.getPageNo() - 1) * pagination.getPageSize();
-            sql.append(String.format("LIMIT %d, %d ", offset,pagination.getPageSize()));
-        }
+//        if (pagination != null) {
+//            int offset = (pagination.getPageNo() - 1) * pagination.getPageSize();
+//            sql.append(String.format("LIMIT %d, %d ", offset,pagination.getPageSize()));
+//        }
         String whereSql = sql.toString().replaceAll("\\[", "").replaceAll("]", "");
         whereSql = whereSql.replaceAll(":", "pn_");
         return whereSql;

@@ -232,14 +232,14 @@ public class UserService extends BaseService {
     }
 
     private boolean checkSameUserName(String userName, ID userId) {
-        if (this._userCache.size() <= 0) {
+        if (this._userCache.size() == 0) {
             this.loadUserCache();
         }
 
-        boolean match = this._userCache.values().stream().filter(u -> StringUtils.equalsIgnoreCase(userName, u.getName()))
-                .anyMatch(u -> Objects.equals(u.getFieldValue("userId"), userId));
+        long count = this._userCache.values().stream().filter(u -> StringUtils.equalsIgnoreCase(userName, u.getName()))
+                .filter(u -> Objects.equals(u.getFieldValue("userId"), userId)).count();
 
-        return !match;
+        return count>0;
 
 
     }

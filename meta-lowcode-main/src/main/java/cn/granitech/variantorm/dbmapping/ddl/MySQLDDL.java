@@ -9,12 +9,10 @@ import cn.granitech.variantorm.pojo.FieldViewModel;
 import cn.granitech.variantorm.util.sql.SqlHelper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 
 public class MySQLDDL implements DBDDL {
     private static final String CREATE_FIELD_COLUMN = "ALTER TABLE `%s` ADD COLUMN `%s` %s NULL DEFAULT NULL";
     private static final String DELETE_FIELD_COLUMN = "ALTER TABLE `%s` DROP COLUMN `%s`";
-    private DataSource dataSource;
     private static final String DROP_TABLE_SHARE = "DROP TABLE IF EXISTS `%s_share`";
     private static final String FULLCREATE_FIELD_COLUMN = "CREATE TABLE `%s`(autoId INT(11) NOT NULL AUTO_INCREMENT,%s CHAR(40) NOT NULL,`createdOn` DATETIME NOT NULL,`createdBy` CHAR(40) NOT NULL,`ownerUser` CHAR(40) NOT NULL,`ownerDepartment` CHAR(40) NOT NULL,`modifiedOn` DATETIME NULL DEFAULT NULL,`modifiedBy` CHAR(40) NULL DEFAULT NULL,`isDeleted` TINYINT(4) NULL DEFAULT '0',PRIMARY KEY(`autoId`) USING BTREE,UNIQUE INDEX `%s` (`%s`) USING BTREE,INDEX `ownerUser` (`ownerUser`) USING BTREE,INDEX `ownerDepartment` (`ownerDepartment`) USING BTREE,INDEX `isDeleted` (`isDeleted`) USING BTREE )COLLATE='utf8mb4_general_ci'ENGINE=InnoDB;";
     private static final String ALTER_FIELD_COLUMN = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s NULL DEFAULT NULL";
@@ -99,9 +97,8 @@ public class MySQLDDL implements DBDDL {
        String  dropShareSql = String.format(DROP_TABLE_SHARE, physicalName);
         jdbcTemplate.execute(dropShareSql);
     }
-    private final JdbcTemplate jdbcTemplate;
-    public MySQLDDL(DataSource dataSource) {
-        this.dataSource = dataSource;
-        jdbcTemplate = new JdbcTemplate(this.dataSource);
+    private  JdbcTemplate jdbcTemplate;
+    public MySQLDDL(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate =jdbcTemplate;
     }
 }

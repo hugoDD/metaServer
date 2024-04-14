@@ -41,8 +41,9 @@ public final class PrimaryKeyField extends ActualField {
     public Object readDBValue(PersistenceManager pm, Field field, ResultSet rs, int index) {
         try {
             String value = rs.getString(index);
-            if (rs.wasNull() || value == null || value.contains("nul"))
+            if (rs.wasNull() || value == null || value.contains("nul")){
                 return null;
+            }
             return new ID(value);
         } catch (SQLException sQLException) {
             throw new DataAccessException("Get id from ResultSet error", sQLException);

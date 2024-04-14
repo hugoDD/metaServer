@@ -15,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import static cn.granitech.variantorm.constant.SystemEntities.ReferenceCache;
+
 public class AnyReferenceField extends ReferenceField {
     public AnyReferenceField() {
     }
@@ -86,10 +88,10 @@ public class AnyReferenceField extends ReferenceField {
                 String nameEqId = String.format(" [%s] = '%s' ", fieldName,id.getId());
                 RecordQuery recordQuery = pm.createRecordQuery();
                 String entityName = entity.getName();
-                EntityRecord record= recordQuery.queryOne(entityName, nameEqId, null, null, nameEqId);
+                EntityRecord record= recordQuery.queryOne(entityName, nameEqId, null, null, fieldName);
                 if (record != null) {
-                    if (pm.getQueryCache().getIDName(record.toString()) == null) {
-                        EntityRecord entityRecord = pm.newRecord("ReferenceCache");
+                    if (pm.getQueryCache().getIDName(record.id().getId()) == null) {
+                        EntityRecord entityRecord = pm.newRecord(ReferenceCache);
                         entityRecord.setFieldValue("referenceId", entityRecord);
                         entityRecord.setFieldValue("recordLabel", this.getNameValueOfRecord(entityRecord, fieldName, id));
                         pm.insert(entityRecord);

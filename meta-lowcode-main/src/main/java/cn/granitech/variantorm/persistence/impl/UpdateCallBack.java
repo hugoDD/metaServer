@@ -111,7 +111,7 @@ public class UpdateCallBack implements ConnectionCallback<Boolean> {
 
                 } finally {
 
-                    SqlHelper.closeStatement(preparedStatement);
+                 //   SqlHelper.closeStatement(preparedStatement);
                 }
 
             }

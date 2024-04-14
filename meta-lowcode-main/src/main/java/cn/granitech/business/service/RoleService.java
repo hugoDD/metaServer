@@ -17,18 +17,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
+
+import static cn.granitech.variantorm.constant.SystemEntityCodes.ADMIN_ROLE_ID;
 
 @Service
 public class RoleService extends BaseService {
     private final Map<ID, Map<String, Object>> _roleCache = new LinkedHashMap<>();
-    @Autowired
+    @Resource
     EntityManagerService entityManagerService;
-    @Autowired
+    @Resource
     PersistenceManager persistenceManager;
-    @Autowired
+    @Resource
     CrudService crudService;
-    @Autowired
+    @Resource
     UserService userService;
 
     public RoleService() {
@@ -41,7 +44,7 @@ public class RoleService extends BaseService {
 
         for (EntityRecord role : roleList) {
             ID roleId = role.getFieldValue("roleId");
-            if (roleId.getId().equals("0000023-00000000000000000000000000000001")) {
+            if (roleId.getId().equals(ADMIN_ROLE_ID)) {
                 this._roleCache.put(roleId, this.buildRightValueMap(true));
             } else {
                 Map<String, Object> rightValueMap = new HashMap<>();
@@ -87,10 +90,10 @@ public class RoleService extends BaseService {
 
     public Map<String, Object> getRightMapOfUser(ID userId) throws JsonProcessingException {
         List<ID> roleList = this.userService.getRoleIDListOfUser(userId);
-        if (roleList.size() <= 0) {
+        if (roleList.isEmpty()) {
             return new HashMap<>();
         } else {
-            if (this._roleCache.size() <= 0) {
+            if (this._roleCache.isEmpty()) {
                 this.loadRoleCache();
             }
 
@@ -167,7 +170,7 @@ public class RoleService extends BaseService {
         roleDTO.setDisabled(roleRecord.getFieldValue("disabled"));
         roleDTO.setDescription(roleRecord.getFieldValue("description"));
         roleDTO.setRightEntityList(this.buildRightEntityList());
-        if ("0000023-00000000000000000000000000000001".equals(roleDTO.getRoleId())) {
+        if (ADMIN_ROLE_ID.equals(roleDTO.getRoleId())) {
             roleDTO.setRightValueMap(this.buildRightValueMap(true));
         } else {
             String rightJson = roleRecord.getFieldValue("rightJson");
@@ -212,7 +215,7 @@ public class RoleService extends BaseService {
                 ID newRoleId = this.crudService.create(oldRoleRecord);
                 roleDTO.setRoleId(newRoleId.toString());
             } else {
-                if ("0000023-00000000000000000000000000000001".equals(roleDTO.getRoleId())) {
+                if (ADMIN_ROLE_ID.equals(roleDTO.getRoleId())) {
                     throw new IllegalArgumentException("管理员角色禁止修改");
                 }
 
@@ -234,7 +237,7 @@ public class RoleService extends BaseService {
 
     @Transactional
     public Boolean deleteRole(ID roleId) {
-        if ("0000023-00000000000000000000000000000001".equals(roleId.toString())) {
+        if (ADMIN_ROLE_ID.equals(roleId.toString())) {
             throw new IllegalArgumentException("管理员角色禁止删除");
         } else {
             this.loadRoleCache();

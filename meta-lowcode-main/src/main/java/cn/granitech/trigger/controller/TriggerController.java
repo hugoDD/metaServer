@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static cn.granitech.variantorm.constant.SystemEntities.TriggerLog;
+
 
 @RestController
 @RequestMapping({"/plugins/metaTrigger/trigger"})
@@ -57,7 +59,7 @@ public class TriggerController {
     @RequestMapping({"/log"})
     @SystemRight(SystemRightEnum.TRIGGER_LOG_MANAGE)
     public ResponseBean<ListQueryResult> queryListMap(@RequestBody ListQueryRequestBody requestBody) {
-        requestBody.setMainEntity("TriggerLog");
+        requestBody.setMainEntity(TriggerLog);
         return new ResponseBean<>(200, null, "success", this.triggerServiceImpl.queryListMap(requestBody));
     }
 

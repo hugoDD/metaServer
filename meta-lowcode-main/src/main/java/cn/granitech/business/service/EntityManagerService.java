@@ -4,6 +4,7 @@ import cn.granitech.exception.ServiceException;
 import cn.granitech.util.CopyEntityHelper;
 import cn.granitech.util.EntityHelper;
 import cn.granitech.util.RedisUtil;
+import cn.granitech.util.SpringHelper;
 import cn.granitech.variantorm.constant.CommonFields;
 import cn.granitech.variantorm.constant.ReservedFields;
 import cn.granitech.variantorm.constant.SystemEntities;
@@ -22,7 +23,6 @@ import cn.hutool.core.comparator.PinyinComparator;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,19 +30,21 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.*;
 
+import static cn.granitech.variantorm.constant.SystemEntities.*;
+
 @Service
 public class EntityManagerService extends BaseService {
-    @Autowired
+    @Resource
     DBMappingManager dbMappingManager;
-    @Autowired
+    @Resource
     PersistenceManager persistenceManager;
-    @Autowired
+    @Resource
     OptionManagerService optionManagerService;
-    @Autowired
+    @Resource
     TagManagerService tagManagerService;
-    @Autowired
+    @Resource
     FormLayoutManager formLayoutManager;
-    @Autowired
+    @Resource
     RoleService roleService;
     @Resource
     RedisUtil redisUtil;
@@ -154,7 +156,7 @@ public class EntityManagerService extends BaseService {
                     });
                 }
             });
-            if (referFieldList.size() > 0) {
+            if (!referFieldList.isEmpty()) {
                 throw new ServiceException("实体已被其他实体引用（%s）,请先删除相关字段", String.join(",", referFieldList));
             } else {
                 this.dbMappingManager.deleteEntity(entityName);
@@ -174,7 +176,7 @@ public class EntityManagerService extends BaseService {
     @Transactional
     public void createOptionField(int entityCode, Field field, List<KeyValueEntry<String, Integer>> optionList) {
         this.dbMappingManager.createDateTimeField(entityCode, field);
-        if (optionList.size() > 0) {
+        if (!optionList.isEmpty()) {
             this.optionManagerService.saveOptionList(field.getOwner().getName(), field.getName(), optionList);
         }
 
@@ -189,7 +191,7 @@ public class EntityManagerService extends BaseService {
     @Transactional
     public void createTagField(int entityCode, Field field, List<String> tagList) {
         this.dbMappingManager.createDateTimeField(entityCode, field);
-        if (tagList.size() > 0) {
+        if (!tagList.isEmpty()) {
             this.tagManagerService.saveTagList(field.getOwner().getName(), field.getName(), tagList);
         }
 
@@ -300,7 +302,7 @@ public class EntityManagerService extends BaseService {
                 if (!entity.isDetailEntityFlag()) {
                     entity.getFieldSet().forEach((field) -> {
                         if (field.getType() == FieldTypes.REFERENCE) {
-                            if (field.getReferTo().size() != 0) {
+                            if (!field.getReferTo().isEmpty()) {
                                 Entity reference = field.getReferTo().iterator().next();
                                 if (reference.equals(mainEntity)) {
                                     if (querySystem || !SystemEntities.isSystemEntity(reference.getName())) {
@@ -350,18 +352,19 @@ public class EntityManagerService extends BaseService {
         Integer entityCode = entity.getEntityCode();
         String entityNameFilter = String.format("entityName = '%s'", entity.getName());
         String entityCodeFilter = String.format("entityCode = '%s'", entityCode);
-        this.batchDeleteRecord("ApprovalConfig", entityCodeFilter);
-        this.batchDeleteRecord("TriggerConfig", entityCodeFilter);
-        this.batchDeleteRecord("TriggerLog", String.format(" recordId LIKE '%%%s-%%' ", entityCode));
-        this.batchDeleteRecord("ReportConfig", entityCodeFilter);
-        this.batchDeleteRecord("RevisionHistory", entityCodeFilter);
-        this.batchDeleteRecord("RecycleBin", entityCodeFilter);
-        this.batchDeleteRecord("Notification", String.format(" relatedRecord LIKE '%%%s-%%' ", entityCode));
-        this.batchDeleteRecord("LayoutConfig", entityCodeFilter);
-        this.batchDeleteRecord("FormLayout", entityCodeFilter);
-        this.batchDeleteRecord("OptionItem", entityNameFilter);
-        this.batchDeleteRecord("TagItem", entityNameFilter);
-        this.batchDeleteRecord("ReferenceListMap", entityNameFilter);
+        EntityManagerService selfService = SpringHelper.getBean(EntityManagerService.class);
+        selfService.batchDeleteRecord(ApprovalConfig, entityCodeFilter);
+        selfService.batchDeleteRecord(TriggerConfig, entityCodeFilter);
+        selfService.batchDeleteRecord(TriggerLog, String.format(" recordId LIKE '%%%s-%%' ", entityCode));
+        selfService.batchDeleteRecord(ReportConfig, entityCodeFilter);
+        selfService.batchDeleteRecord(RevisionHistory, entityCodeFilter);
+        selfService.batchDeleteRecord(RecycleBin, entityCodeFilter);
+        selfService.batchDeleteRecord(Notification, String.format(" relatedRecord LIKE '%%%s-%%' ", entityCode));
+        selfService.batchDeleteRecord(LayoutConfig, entityCodeFilter);
+        selfService.batchDeleteRecord(FormLayout, entityCodeFilter);
+        selfService.batchDeleteRecord(OptionItem, entityNameFilter);
+        selfService.batchDeleteRecord(TagItem, entityNameFilter);
+        selfService.batchDeleteRecord(ReferenceListMap, entityNameFilter);
         String entityCodePre = StrUtil.padPre(String.valueOf(entityCode), 7, '0');
         this.redisUtil.removePattern(RedisKeyEnum.REFERENCE_LIST_MAP.getKey(entity.getName()) + "*");
         this.redisUtil.removePattern(RedisKeyEnum.QUICK_FILTER.getKey(entity.getName()) + "*");

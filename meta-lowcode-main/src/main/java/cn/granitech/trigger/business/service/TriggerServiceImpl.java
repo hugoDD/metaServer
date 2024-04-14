@@ -33,11 +33,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+import static cn.granitech.variantorm.constant.SystemEntities.TriggerLog;
+
 @Service
 public class TriggerServiceImpl extends BaseService implements TriggerService {
     private static final Map<Integer, BaseTrigger> TRIGGER_MAP = new HashMap<>();
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final int HIERARCHY_NUMBER_MAX = 5;
     private final ThreadLocal<Map<String, Object>> updateDataCache = new ThreadLocal<>();
     private final ThreadLocal<List<String>> deleteRecordIdList = new ThreadLocal<>();
     private final ThreadLocal<TriggerLock> triggerLockThreadLocal = new ThreadLocal<>();
@@ -72,6 +73,8 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
     DataAutoCreateTrigger dataAutoCreateTrigger;
     @Resource
     GroupAggregationTrigger groupAggregationTrigger;
+    @Resource
+    TriggerLogServiceImpl logService;
 
     @PostConstruct
     public void initializeTriggerMap() {
@@ -105,7 +108,7 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
             entityRecord.setFieldValue("modifiedBy", callerId);
             this.pm.update(entityRecord);
         }
-        EntityRecord savedRecord = this.crudService.queryById(ID.valueOf(recordId), (String) null);
+        EntityRecord savedRecord = this.crudService.queryById(ID.valueOf(recordId));
         saveCronTask(savedRecord);
         return new FormQueryResult(null, null, savedRecord, null, null);
     }
@@ -124,6 +127,7 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
 
     public void executeTrigger(TriggerWhenEnum triggerEnum, ID entityId, TriggerLock triggerLock) {
         try {
+            int HIERARCHY_NUMBER_MAX = 5;
             if (triggerLock.getHierarchyNumber() > HIERARCHY_NUMBER_MAX) {
                 throw new ServiceException(String.format("触发器执行层数过深！当前层级%s", triggerLock.getHierarchyNumber()));
             }
@@ -131,19 +135,18 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
 
             String filter = String.format("isDisabled = 0 AND (whenNum & %s) AND entityCode = %s", triggerEnum.getMaskValue(), entityId.getEntityCode());
             List<EntityRecord> entityRecords = this.crudService.queryListRecord("TriggerConfig", filter, null, "priority DESC", null, "triggerConfigId", "whenCron", "actionFilter", "name", "priority", "actionType", "actionContent");
-            if (entityRecords.size() == 0) {
+            if (entityRecords.isEmpty()) {
                 return;
             }
 
 
             StringBuffer easySql = getTriggerCheckSql(entityId, entityRecords);
 
-
             SelectStatement selectStatement = (new QueryHelper()).compileEasySql(this.pm.getMetadataManager(), easySql.toString());
             Map<String, Object> map = queryMapBySql(selectStatement.toString());
 
 
-            entityRecords.forEach(entityRecord -> {
+            for (EntityRecord entityRecord : entityRecords) {
                 ID triggerConfigId = entityRecord.getFieldValue("triggerConfigId");
 
                 if (!map.containsKey(triggerConfigId.getId()) || map.get(triggerConfigId.getId()) == null || (Long) map.get(triggerConfigId.getId()) == 0L) {
@@ -173,7 +176,7 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
                 int actionType = entityRecord.getFieldValue("actionType");
                 String actionContent = entityRecord.getFieldValue("actionContent");
                 trigger(triggerConfigId.toString(), entityId, actionType, actionContent, triggerEnum);
-            });
+            }
             setTriggerLock(null);
             setExecuteTriggerId(null);
             setUpdateDataCache(null);
@@ -247,14 +250,18 @@ public class TriggerServiceImpl extends BaseService implements TriggerService {
             }
             this.log.error("触发器执行异常", e);
         } finally {
-            EntityRecord entityRecord = this.pm.newRecord("TriggerLog");
+            EntityRecord entityRecord = this.pm.newRecord(TriggerLog);
             entityRecord.setFieldValue("triggerReason", (triggerWhen == null) ? "" : triggerWhen.getMaskLabel());
             entityRecord.setFieldValue("triggerConfigId", triggerConfigId);
             entityRecord.setFieldValue("actionType", actionType);
             entityRecord.setFieldValue("recordId", entityId.toString());
             entityRecord.setFieldValue("executeFlag", flag);
             entityRecord.setFieldValue("errorLog", errorLog);
-            saveOrUpdateRecord(null, entityRecord);
+//            saveOrUpdateRecord(null, entityRecord);
+            String callerId = this.callerContext.getCallerId();
+            String departmentId = this.callerContext.getDepartmentId();
+            logService.log(entityRecord, callerId, departmentId);
+
         }
 
         restoreCaller(callerArray);

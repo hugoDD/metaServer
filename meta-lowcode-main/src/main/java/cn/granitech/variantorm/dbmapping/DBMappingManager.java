@@ -8,7 +8,6 @@ import cn.granitech.variantorm.dbmapping.ddl.DBDDL;
 import cn.granitech.variantorm.dbmapping.ddl.MySQLDDL;
 import cn.granitech.variantorm.exception.DuplicateEntityException;
 import cn.granitech.variantorm.exception.DuplicateFieldException;
-import cn.granitech.variantorm.exception.LicenseException;
 import cn.granitech.variantorm.metadata.MetadataManager;
 import cn.granitech.variantorm.metadata.fieldtype.FieldTypes;
 import cn.granitech.variantorm.persistence.PersistenceManager;
@@ -16,7 +15,6 @@ import cn.granitech.variantorm.pojo.Entity;
 import cn.granitech.variantorm.pojo.Field;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 
 import static cn.granitech.variantorm.constant.SystemEntityCodes.USER_CODE;
@@ -24,17 +22,17 @@ import static cn.granitech.variantorm.constant.SystemEntityCodes.USER_CODE;
 public class DBMappingManager {
     private final MetadataManager metadataManager;
     private final DBDDL db;
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
     private final PersistenceManager pm;
 
     public void createDateTimeField(int entityCode, Field field) {
-        if (DBMappingHelper.checkFieldExists(this.dataSource, field.getOwner().getEntityCode(), field.getName())) {
+        if (DBMappingHelper.checkFieldExists(this.jdbcTemplate, field.getOwner().getEntityCode(), field.getName())) {
             throw new DuplicateFieldException("字段" + field.getName() + "已存在");
         }
         if (field.getType() != FieldTypes.REFERENCELIST) {
             this.db.createFieldColumn(field);
         }
-        DBMappingHelper.insertMetaFieldRecord(this.dataSource, entityCode, field);
+        DBMappingHelper.insertMetaFieldRecord(this.jdbcTemplate, entityCode, field);
         this.metadataManager.addField(field.getOwner().getName(), field);
     }
 
@@ -44,7 +42,7 @@ public class DBMappingManager {
         }
         Entity a = this.metadataManager.getEntity(entityName);
         this.db.deleteEntityTable(a);
-        DBMappingHelper.deleteMetaEntityRecord(this.dataSource, entityName, a.getEntityCode());
+        DBMappingHelper.deleteMetaEntityRecord(this.jdbcTemplate, entityName, a.getEntityCode());
         this.metadataManager.removeEntity(entityName);
     }
 
@@ -61,24 +59,16 @@ public class DBMappingManager {
         field.setCreatable(creatable);
         field.setUpdatable(updatable);
         field.setOwner(entity);
-        DBMappingHelper.insertMetaFieldRecord(this.dataSource, entity.getEntityCode(), field);
+        DBMappingHelper.insertMetaFieldRecord(this.jdbcTemplate, entity.getEntityCode(), field);
         mdm.addField(entity.getName(), field);
     }
 
     public void updateEntity(Entity entity) {
-        DBMappingHelper.updateMetaEntityRecord(this.dataSource, entity);
+        DBMappingHelper.updateMetaEntityRecord(this.jdbcTemplate, entity);
         this.metadataManager.updateEntity(entity);
     }
 
 
-    public DBMappingManager(DataSource dataSource, MetadataManager metadataManager, PersistenceManager persistenceManager) {
-
-        this.dataSource = dataSource;
-        this.metadataManager = metadataManager;
-        this.pm = persistenceManager;
-        this.db = new MySQLDDL(dataSource);
-        DBMappingHelper.loadMetadataFromDB(dataSource, this.metadataManager);
-    }
 
 
     public void createApprovalSystemFields(Entity entity) {
@@ -146,7 +136,7 @@ public class DBMappingManager {
         Field field = this.metadataManager.getEntity(entityName).getField(fieldName);
         int entityCode = field.getOwner().getEntityCode();
         this.db.deleteFieldColumn(field);
-        DBMappingHelper.deleteMetaFieldRecord(this.dataSource, entityCode, fieldName);
+        DBMappingHelper.deleteMetaFieldRecord(this.jdbcTemplate, entityCode, fieldName);
         this.metadataManager.removeField(entityName, fieldName);
     }
 
@@ -162,7 +152,7 @@ public class DBMappingManager {
         field.setCreatable(creatable);
         field.setUpdatable(updatable);
         field.setOwner(entity);
-        DBMappingHelper.insertMetaFieldRecord(this.dataSource, entity.getEntityCode(), field);
+        DBMappingHelper.insertMetaFieldRecord(this.jdbcTemplate, entity.getEntityCode(), field);
         mdm.addField(entity.getName(), field);
     }
 
@@ -181,12 +171,13 @@ public class DBMappingManager {
             field.setReferTo(currentField.getReferTo());
         }
 
-        DBMappingHelper.updateMetaFieldRecord(this.dataSource, entityCode, field);
+        DBMappingHelper.updateMetaFieldRecord(this.jdbcTemplate, entityCode, field);
         this.metadataManager.updateField(entity.getName(), field.getName(), field);
     }
 
     public void createEntity(Entity entity) {
-        if (this.pm != null && this.pm.getLicenseInfo().getEntityLimit() != null) {
+        //@todo license验证
+        /*if (this.pm != null && this.pm.getLicenseInfo().getEntityLimit() != null) {
             Integer entityLimit = this.pm.getLicenseInfo().getEntityLimit();
             JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
             Integer count = jdbcTemplate.queryForObject(" SELECT count(*) FROM `t_meta_entity` where entityCode > 1000 ", Integer.class);
@@ -194,19 +185,19 @@ public class DBMappingManager {
                 String entityLimitSql = "当前系统版本最多支持%d个自定义实体，已超出此限制！";
                 throw new LicenseException(String.format(entityLimitSql, entityLimit));
             }
-        }
+        }*/
 
-        if (DBMappingHelper.checkEntityExists(this.dataSource, entity.getName())) {
+        if (DBMappingHelper.checkEntityExists(this.jdbcTemplate, entity.getName())) {
             throw new DuplicateEntityException("实体" + entity.getName() + "已存在!");
         }
-        if (DBMappingHelper.checkTableExists(this.dataSource, entity.getPhysicalName())) {
+        if (DBMappingHelper.checkTableExists(this.jdbcTemplate, entity.getPhysicalName())) {
             throw new IllegalStateException("数据库表" + entity.getPhysicalName() + "已存在!");
         }
         this.db.createEntityTable(entity);
-        DBMappingHelper.insertMetaEntityRecord(this.dataSource, entity);
+        DBMappingHelper.insertMetaEntityRecord(this.jdbcTemplate, entity);
         this.metadataManager.addEntity(entity);
         Field idField = entity.getIdField();
-        DBMappingHelper.insertMetaFieldRecord(dataSource, entity.getEntityCode(), idField);
+        DBMappingHelper.insertMetaFieldRecord(jdbcTemplate, entity.getEntityCode(), idField);
         metadataManager.addField(entity.getName(), idField);
 
         this.createDateTimeField(entity, metadataManager, "createdOn", "创建时间", false, false, false);
@@ -230,7 +221,7 @@ public class DBMappingManager {
         field.setCreatable(creatable);
         field.setUpdatable(updatable);
         field.setOwner(entity);
-        DBMappingHelper.insertMetaFieldRecord(this.dataSource, entity.getEntityCode(), field);
+        DBMappingHelper.insertMetaFieldRecord(this.jdbcTemplate, entity.getEntityCode(), field);
         mdm.addField(entity.getName(),field);
     }
 
@@ -249,17 +240,25 @@ public class DBMappingManager {
         Entity refEntity = mdm.getEntity(refToEntityName);
         field.setReferTo(Collections.singleton(refEntity));
         field.setOwner(entity);
-        DBMappingHelper.insertMetaFieldRecord(this.dataSource, entity.getEntityCode(), field);
+        DBMappingHelper.insertMetaFieldRecord(this.jdbcTemplate, entity.getEntityCode(), field);
         mdm.addField(entity.getName(), field);
     }
 
+    public DBMappingManager(JdbcTemplate jdbcTemplate, MetadataManager metadataManager, PersistenceManager persistenceManager) {
 
-    public DBMappingManager(DataSource dataSource, MetadataManager metadataManager) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.metadataManager = metadataManager;
+        this.pm = persistenceManager;
+        this.db = new MySQLDDL(this.jdbcTemplate);
+        DBMappingHelper.loadMetadataFromDB(this.jdbcTemplate, this.metadataManager);
+    }
 
-        this.dataSource = dataSource;
+    public DBMappingManager(JdbcTemplate jdbcTemplate, MetadataManager metadataManager) {
+
+        this.jdbcTemplate = jdbcTemplate;
         this.metadataManager = metadataManager;
         this.pm = null;
-        this.db = new MySQLDDL(dataSource);
-        DBMappingHelper.loadMetadataFromDB(dataSource, this.metadataManager);
+        this.db = new MySQLDDL(jdbcTemplate);
+        DBMappingHelper.loadMetadataFromDB(jdbcTemplate, this.metadataManager);
     }
 }

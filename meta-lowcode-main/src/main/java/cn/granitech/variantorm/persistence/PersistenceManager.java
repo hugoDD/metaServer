@@ -11,7 +11,6 @@ import cn.granitech.variantorm.persistence.license.LicenseInfo;
 import cn.granitech.variantorm.persistence.queryCompiler.SqlCompiler;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 
 public interface PersistenceManager {
     MetadataManager getMetadataManager();
@@ -20,7 +19,6 @@ public interface PersistenceManager {
 
     Dialect getDialect();
 
-    DataSource getDataSource();
 
     JdbcTemplate getJdbcTemplate();
 

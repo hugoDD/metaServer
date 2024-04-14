@@ -10,18 +10,13 @@ import cn.granitech.variantorm.pojo.Entity;
 import cn.granitech.variantorm.pojo.Field;
 import cn.granitech.variantorm.pojo.FieldViewModel;
 import cn.granitech.variantorm.pojo.ReferenceModel;
-import cn.granitech.variantorm.util.MDHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,27 +32,27 @@ import static cn.granitech.variantorm.constant.MetaEntityColumns.label;
 public class DBMappingHelper {
     private static final String SPLIT_STR = ",";
 
-    public static void updateMetaEntityRecord(DataSource dataSource, Entity entity) {
+    public static void updateMetaEntityRecord(JdbcTemplate jdbcTemplate, Entity entity) {
         String sql = "UPDATE `t_meta_entity` SET `label`=?, `layoutable`=?,  `listable`=?, `tags`=? WHERE `name`=? ";
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
 
         jdbcTemplate.update(sql, entity.getLabel(), entity.isLayoutable(), entity.isListable(), entity.getTags(), entity.getName());
     }
 
-    public static boolean checkFieldExists(DataSource dataSource, int entityCode, String fieldName) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    public static boolean checkFieldExists(JdbcTemplate jdbcTemplate, int entityCode, String fieldName) {
+
         String sql = " SELECT count(*) FROM `t_meta_field` where `entityCode`=? AND `name`=? ";
 
         Integer fieldCount = jdbcTemplate.queryForObject(sql, Integer.class, entityCode, fieldName);
         return fieldCount != null && fieldCount > 0;
     }
 
-    public static void insertMetaEntityRecord(DataSource dataSource, Entity entity) {
+    public static void insertMetaEntityRecord(JdbcTemplate jdbcTemplate, Entity entity) {
         String sql = "INSERT INTO `t_meta_entity` (`entityId`,`name`,`label`,`physicalName`,`entityCode`,  `detailEntityFlag`, `mainEntity`, `layoutable`, `listable`, `authorizable`, `shareable`, `assignable`, `tags`)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \n";
         ID newID = ID.newID(1);
         int entityCode = entity.getEntityCode() == null ? newID.getEntityCode() : entity.getEntityCode();
         String mainEntityName = entity.getMainEntity() == null ? null : entity.getMainEntity().getName();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
         Object[] param = new Object[13];
         param[0] = newID;
         param[1] = entity.getName();
@@ -76,16 +71,16 @@ public class DBMappingHelper {
         entity.setEntityCode(entityCode);
     }
 
-    private static /* synthetic */ int ALLATORIxDEMO(DataSource dataSource) {
-        Integer a = new JdbcTemplate(dataSource).queryForObject(" SELECT MAX(`entityCode`) FROM `t_meta_entity` ", Integer.class);
+    private static /* synthetic */ int ALLATORIxDEMO(JdbcTemplate jdbcTemplate) {
+        Integer a = jdbcTemplate.queryForObject(" SELECT MAX(`entityCode`) FROM `t_meta_entity` ", Integer.class);
         if (a == null || a <= 1000) {
             return 1001;
         }
         return a + 1;
     }
 
-    public static void deleteMetaFieldRecord(DataSource dataSource, int entityCode, String fieldName) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    public static void deleteMetaFieldRecord(JdbcTemplate jdbcTemplate, int entityCode, String fieldName) {
+
         String sql = " DELETE FROM `t_meta_field` WHERE `entityCode`=? AND `name`=? ";
 
         jdbcTemplate.update(sql, entityCode, fieldName);
@@ -180,7 +175,7 @@ public class DBMappingHelper {
         return entity;
     }
 
-    public static void updateMetaFieldRecord(DataSource dataSource, int entityCode, Field field) {
+    public static void updateMetaFieldRecord(JdbcTemplate jdbcTemplate, int entityCode, Field field) {
         String sql = "UPDATE `t_meta_field` SET `label`=?, `description`=?, `displayOrder`=?, `nullable`=?,  `creatable`=?, `updatable`=?, `idFieldFlag`=?, `nameFieldFlag`=?, `mainDetailFieldFlag`=?,  `defaultMemberOfListFlag`=?, `referTo`=?, `referenceSetting`=?, `fieldViewModel`=?  WHERE `entityCode`=? AND `name`=?";
         String referName = "";
         if (field.getReferTo() != null) {
@@ -211,7 +206,7 @@ public class DBMappingHelper {
             e.printStackTrace();
         }
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
         Object[] paraArray = new Object[15];
         paraArray[0] = field.getLabel();
         paraArray[1] = field.getDescription();
@@ -231,8 +226,8 @@ public class DBMappingHelper {
         jdbcTemplate.update(sql, paraArray);
     }
 
-    public static void setNameFieldOfEntity(DataSource dataSource, Entity entity, Field field) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    public static void setNameFieldOfEntity(JdbcTemplate jdbcTemplate, Entity entity, Field field) {
+
         String updateSql = " UPDATE `t_meta_field` SET `nameFieldFlag`=0 WHERE `entityCode`=? ";
 
         jdbcTemplate.update(updateSql, entity.getEntityCode());
@@ -241,7 +236,7 @@ public class DBMappingHelper {
         jdbcTemplate.update(sql, entity.getEntityCode(), field.getName());
     }
 
-    public static void insertMetaFieldRecord(DataSource dataSource, int entityCode, Field field) {
+    public static void insertMetaFieldRecord(JdbcTemplate jdbcTemplate, int entityCode, Field field) {
         String sql = "INSERT INTO `t_meta_field` (`fieldId`, `entityCode`,`name`,`label`,`physicalName`,`type`,  `description`, `displayOrder`, `nullable`, `creatable`, `updatable`, `idFieldFlag`, `nameFieldFlag`,  `mainDetailFieldFlag`, `defaultMemberOfListFlag`, `referTo`, `referenceSetting`, `fieldViewModel`)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         ID newID = ID.newID(2);
         String referName = "";
@@ -273,7 +268,7 @@ public class DBMappingHelper {
             e.printStackTrace();
         }
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
         Object[] paraArray = new Object[18];
         paraArray[0] = newID.getId();
         paraArray[1] = entityCode;
@@ -296,34 +291,32 @@ public class DBMappingHelper {
         jdbcTemplate.update(sql, paraArray);
     }
 
-    public static void loadMetadataFromDB(DataSource dataSource, MetadataManager mdm) {
-        JdbcTemplate a = new JdbcTemplate(dataSource);
-        a.query(" SELECT * FROM `t_meta_entity` order by entityCode ", resultSet -> {
+    public static void loadMetadataFromDB(JdbcTemplate jdbcTemplate, MetadataManager mdm) {
+        jdbcTemplate.query(" SELECT * FROM `t_meta_entity` order by entityCode ", resultSet -> {
             Entity entity = toEntity(mdm, resultSet);
             mdm.addEntity(entity);
         });
-        Collection<Entity> a2 = mdm.getEntitySet();
-        for (Entity a3 : a2) {
-            if (a3.isDetailEntityFlag()) {
+        Collection<Entity> entitySet = mdm.getEntitySet();
+        for (Entity entity : entitySet) {
+            if (entity.isDetailEntityFlag()) {
                 continue;
             }
-            a3.setMainEntity(null);
+            entity.setMainEntity(null);
         }
-        for (Entity a3 : a2) {
-            Entity a4= a3.getMainEntity();
-            if (!a3.isDetailEntityFlag() || a4  == null){
+        for (Entity entity : entitySet) {
+            Entity mainEntity= entity.getMainEntity();
+            if (!entity.isDetailEntityFlag() || mainEntity  == null){
                 continue;
             }
-            Set<Entity> a5 = a4.getDetailEntitySet() != null ? a4.getDetailEntitySet() : new LinkedHashSet<>();
-            a5.add(a3);
+            Set<Entity> detailEntitySet = mainEntity.getDetailEntitySet() != null ? mainEntity.getDetailEntitySet() : new LinkedHashSet<>();
+            detailEntitySet.add(entity);
         }
-        a.query(" SELECT * FROM `t_meta_field` ", resultSet->{
+        jdbcTemplate.query(" SELECT * FROM `t_meta_field` ", resultSet->{
             toField(mdm, resultSet);
         });
     }
 
-    public static void deleteMetaEntityRecord(DataSource dataSource, String entityName, int entityCode) {
-        JdbcTemplate jdbcTemplate  = new JdbcTemplate(dataSource);
+    public static void deleteMetaEntityRecord(JdbcTemplate jdbcTemplate, String entityName, int entityCode) {
         String entitySql = " DELETE FROM `t_meta_entity` WHERE `name`=? ";
 
         jdbcTemplate.update(entitySql, entityName);
@@ -339,15 +332,15 @@ public class DBMappingHelper {
         return objectMapper.readValue(content, valueTypeRef);
     }
 
-    public static boolean checkEntityExists(DataSource dataSource, String entityName) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    public static boolean checkEntityExists(JdbcTemplate jdbcTemplate, String entityName) {
+
         String sql = " SELECT count(*) FROM `t_meta_entity` where `name`=? ";
         Integer entityCount = jdbcTemplate.queryForObject(sql, Integer.class, entityName);
         return entityCount!=null && entityCount > 0;
     }
 
-    public static boolean checkTableExists(DataSource dataSource, String tableName) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    public static boolean checkTableExists(JdbcTemplate jdbcTemplate, String tableName) {
+
         String sqlStr = " SHOW TABLES LIKE '%s' ";
         String sql = String.format(sqlStr, tableName);
         List<String> list = jdbcTemplate.queryForList(sql, String.class);

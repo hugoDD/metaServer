@@ -79,8 +79,7 @@ public class ReferenceListField extends VirtualField {
         } else if (objectId == null) {
             throw new NullPointerException("objectId");
         } else {
-            JdbcTemplate a = new JdbcTemplate(pm.getDataSource());
-            a.execute((ConnectionCallback<Boolean>) conn -> {
+            pm.getJdbcTemplate().execute((ConnectionCallback<Boolean>) conn -> {
 
                 Statement statement = null;
 

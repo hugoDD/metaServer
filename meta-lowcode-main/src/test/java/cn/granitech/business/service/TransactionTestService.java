@@ -5,8 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-
 /**
  * @Description:
  * @Author: VDP 思南
@@ -18,30 +16,30 @@ import javax.sql.DataSource;
 public class TransactionTestService {
 
     @Autowired
-    DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * 未添加事务
      */
     public void test1() {
-        new JdbcTemplate(dataSource).execute(" INSERT INTO `t_test` (`num`) VALUES (1) ");
+        jdbcTemplate.execute(" INSERT INTO `t_test` (`num`) VALUES (1) ");
         int i = 1 / 0;
     }
 
     @Transactional
     public void test2() {
-        new JdbcTemplate(dataSource).execute(" INSERT INTO `t_test` (`num`) VALUES (2) ");
+        jdbcTemplate.execute(" INSERT INTO `t_test` (`num`) VALUES (2) ");
         int i = 1 / 0;
     }
 
     @Transactional
     public void test3() {
-        new JdbcTemplate(dataSource).execute(" INSERT INTO `t_test` (`num`) VALUES (3) ");
+        jdbcTemplate.execute(" INSERT INTO `t_test` (`num`) VALUES (3) ");
     }
 
     @Transactional
     public void test4() {
-        new JdbcTemplate(dataSource).execute(" INSERT INTO `t_test` (`num`) VALUES (4) ");
+        jdbcTemplate.execute(" INSERT INTO `t_test` (`num`) VALUES (4) ");
     }
 
 }

@@ -12,9 +12,14 @@ import cn.granitech.variantorm.pojo.Field;
 import cn.granitech.variantorm.pojo.Pagination;
 import cn.granitech.variantorm.pojo.QuerySchema;
 import cn.granitech.variantorm.util.MDHelper;
+import cn.hutool.core.util.PageUtil;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.PagerUtils;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class DataQueryImpl implements DataQuery {
@@ -106,32 +111,42 @@ public class DataQueryImpl implements DataQuery {
         SelectStatement selectStatement = EasySQLHelper.generateRawSql(this.pm, querySchema, pagination);
         List<String> queryFields = selectStatement.getFieldsList();
         String sql = selectStatement.toString();
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(this.pm.getJdbcTemplate());
         if (pagination != null) {
-            sql = sql.replaceFirst("SELECT ", "SELECT  " + SQL_CALC_FOUND_ROWS);
-            sql = sql + SELECT_FOUND_ROWS;
+            String countSql = PagerUtils.count(sql, DbType.mysql);
+            Integer count = jdbcTemplate.queryForObject(countSql, paramMap, Integer.class);
+            pagination.setTotal(count);
+//            sql = sql.replaceFirst("SELECT ", "SELECT  " + SQL_CALC_FOUND_ROWS);
+//            sql = sql + SELECT_FOUND_ROWS;
+            int offset = (pagination.getPageNo() - 1) * pagination.getPageSize();
+//            sql.append(String.format("LIMIT %d, %d ", offset,pagination.getPageSize()));
+            sql = PagerUtils.limit(sql,DbType.mysql,offset,pagination.getPageSize());
         }
-        System.out.println("Raw sql: " + sql);
-        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(this.pm.getDataSource());
-        jdbcTemplate.execute(sql, paramMap, preparedStatement -> {
-            boolean execute = preparedStatement.execute();
-            if (execute) {
-                ResultSet rs = preparedStatement.getResultSet();
-                while (rs != null && rs.next()) {
-                    doCascadeQuery(rs, queryFields, pm, querySchema, queryCache, resultList);
-                }
-                if (preparedStatement.getMoreResults()) {
-                    rs = preparedStatement.getResultSet();
-                    if (rs != null && rs.next()) {
-                        if (pagination != null) {
-                            pagination.setTotal(rs.getInt(1));
-                        }
-                    }
-                }
-
-
-            }
-
-            return null;
+       // System.out.println("Raw sql: " + sql);
+        jdbcTemplate.query(sql,paramMap, resultSet -> {
+            doCascadeQuery(resultSet, queryFields, pm, querySchema, queryCache, resultList);
         });
+
+//        jdbcTemplate.execute(sql, paramMap, preparedStatement -> {
+//            boolean execute = preparedStatement.execute();
+//            if (execute) {
+//                ResultSet rs = preparedStatement.getResultSet();
+//                while (rs != null && rs.next()) {
+//                    doCascadeQuery(rs, queryFields, pm, querySchema, queryCache, resultList);
+//                }
+////                if (preparedStatement.getMoreResults()) {
+////                    rs = preparedStatement.getResultSet();
+////                    if (rs != null && rs.next()) {
+////                        if (pagination != null) {
+////                            pagination.setTotal(rs.getInt(1));
+////                        }
+////                    }
+////                }
+//
+//
+//            }
+//
+//            return null;
+//        });
     }
 }

@@ -8,25 +8,25 @@ import java.util.List;
 public interface QueryCache {
     OptionCacheManager getOptionCacheManager();
 
-    void reloadReferenceListCache(String var1, String var2, String var3);
+    void reloadReferenceListCache(String entityName, String fieldName, String objectId);
 
-    boolean updateIDNameList(String var1, String var2, String var3, List<IDName> var4);
+    boolean updateIDNameList(String entityName, String refFieldName, String recordId, List<IDName> idNameList);
 
-    void deleteIDName(String var1);
+    void deleteIDName(String id);
 
     void initIDNameList();
 
-    OptionModel getOption(String var1, String var2, int var3);
+    OptionModel getOption(String entityName, String fieldName, int optionValue);
 
-    boolean updateIDName(IDName var1);
+    boolean updateIDName(IDName idName);
 
-    OptionModel getStatus(String var1, String var2, int var3);
+    OptionModel getStatus(String entityName, String fieldName, int statusValue);
 
     TagCacheManager getTagCacheManager();
 
-    List<IDName> getIDNameList(String var1, String var2, String var3);
+    List<IDName> getIDNameList(String entityName, String refFieldName, String recordId);
 
-    IDName getIDName(String var1);
+    IDName getIDName(String refId);
 
     void initIDName();
 }

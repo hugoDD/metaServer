@@ -16,31 +16,24 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Configuration
 @EnableConfigurationProperties
 public class DBMappingManagerAutoConfiguration {
-    public static final String SETTING_VALUE = "settingValue";
     private final Logger log = LoggerFactory.getLogger(getClass());
-    @Resource
-    DataSource dataSource;
+
     @Resource
     PersistenceManager persistenceManager;
 
     @Bean
-    public DBMappingManager dBMappingManager() throws IOException {
-        upgradeDatabase();
-        return new DBMappingManager(this.dataSource, this.persistenceManager.getMetadataManager(), this.persistenceManager);
+    public DBMappingManager dBMappingManager(JdbcTemplate jdbcTemplate) throws IOException {
+        upgradeDatabase(jdbcTemplate);
+        return new DBMappingManager(jdbcTemplate, this.persistenceManager.getMetadataManager(), this.persistenceManager);
     }
 
-    public void upgradeDatabase() throws IOException {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+    public void upgradeDatabase(JdbcTemplate jdbcTemplate) throws IOException {
         jdbcTemplate.execute("COMMIT;");
         try {
             jdbcTemplate.queryForMap("SHOW TABLES LIKE 't_system_setting';");
@@ -48,9 +41,9 @@ public class DBMappingManagerAutoConfiguration {
             this.log.info("---------Initialize Database---------");
             executeUpgradeSql(jdbcTemplate, UpgradeScriptHelper.readInitializeScript());
         }
-        String sqlVersion = (String) jdbcTemplate.queryForMap("SELECT settingValue FROM t_system_setting WHERE settingName = 'sqlVersion';").get("settingValue");
+        String sqlVersion =  jdbcTemplate.queryForObject("SELECT settingValue FROM t_system_setting WHERE settingName = 'sqlVersion'",String.class);
         Map<String, StringBuffer> scriptMap = UpgradeScriptHelper.readUpgradeScript(sqlVersion);
-        List<String> versionList = scriptMap.keySet().stream().collect(Collectors.toList());
+        List<String> versionList = new ArrayList<>(scriptMap.keySet());
         Collections.reverse(versionList);
         for (String version : versionList) {
             this.log.info("upgrade Database:{}", version);
@@ -67,7 +60,7 @@ public class DBMappingManagerAutoConfiguration {
     }
 
     public void executeUpgradeSql(JdbcTemplate jdbcTemplate, StringBuffer sql) {
-        PlatformTransactionManager platformTransactionManager = new DataSourceTransactionManager(this.dataSource);
+        PlatformTransactionManager platformTransactionManager = new DataSourceTransactionManager(Objects.requireNonNull(jdbcTemplate.getDataSource()));
         TransactionStatus transactionStatus = platformTransactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
             jdbcTemplate.execute(sql.toString());

@@ -10,9 +10,11 @@ import cn.granitech.variantorm.pojo.Field;
 import cn.granitech.variantorm.pojo.IDName;
 import cn.granitech.variantorm.pojo.Pagination;
 import cn.granitech.variantorm.pojo.QuerySchema;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RecordQueryImpl implements RecordQuery {
     private PersistenceManager persistenceManager;
@@ -26,10 +28,10 @@ public class RecordQueryImpl implements RecordQuery {
         QuerySchema querySchema = new QuerySchema();
         List<String> nameList;
         if (fieldNames != null && fieldNames.length > 0) {
-            nameList = Arrays.asList(fieldNames);
+            nameList = Stream.of(fieldNames).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
         } else {
             nameList = this.persistenceManager.getMetadataManager().getEntity(entityName).getFieldSet()
-                      .stream().map(Field::getName).collect(Collectors.toList());
+                      .stream().map(Field::getName).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
 
         }
         queryFields.addAll(nameList);
@@ -45,7 +47,7 @@ public class RecordQueryImpl implements RecordQuery {
 
     @Override
     public List<EntityRecord> query(String entityName, String filter, Map<String, Object> paramMap, String sort, Pagination pagination, String ... fieldNames) {
-        ArrayList<String> queryFields = new ArrayList<>();
+        List<String> queryFields = new ArrayList<>();
         QuerySchema querySchema = this.newQuerySchema(entityName, filter, sort, queryFields, fieldNames);
         List<Map<String, Object>> recordList = this.persistenceManager.createDataQuery().query(querySchema, pagination, paramMap);
         List<EntityRecord> entityRecords = new ArrayList<>();

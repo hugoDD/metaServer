@@ -16,8 +16,12 @@ public class TextField extends ActualField {
         try {
             if (value == null) {
                 pstmt.setNull(index, Types.VARCHAR);
-            } else {
+            } else if(value instanceof String) {
+
                 pstmt.setString(index, (String)value);
+            }else {
+                System.out.println(value);
+                pstmt.setString(index, value.toString());
             }
         } catch (SQLException e) {
             throw new DataAccessException("Set string to PreparedStatement error", e);

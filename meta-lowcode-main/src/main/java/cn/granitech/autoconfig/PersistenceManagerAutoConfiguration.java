@@ -8,22 +8,21 @@ import cn.granitech.variantorm.persistence.impl.PersistenceManagerImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 @Configuration
 @EnableConfigurationProperties
 public class PersistenceManagerAutoConfiguration {
-    @Resource
-    DataSource dataSource;
+
     @Resource
     RedisUtil redisUtil;
 
     /* access modifiers changed from: package-private */
     @Bean
-    public PersistenceManager persistenceManager() {
-        PersistenceManagerImpl persistenceManager = new PersistenceManagerImpl(this.dataSource, new QueryHelper());
+    public PersistenceManager persistenceManager(JdbcTemplate jdbcTemplate) {
+        PersistenceManagerImpl persistenceManager = new PersistenceManagerImpl(jdbcTemplate, new QueryHelper());
         persistenceManager.setQueryCache(new QueryCacheImpl(this.redisUtil, persistenceManager));
         return persistenceManager;
     }

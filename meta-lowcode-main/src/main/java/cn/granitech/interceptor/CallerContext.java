@@ -56,7 +56,7 @@ public class CallerContext {
     }
 
     public boolean checkSystemRight(SystemRightEnum role) {
-        return this.rightManager.getFunctionRight(role).booleanValue();
+        return this.rightManager.getFunctionRight(role);
     }
 
     public boolean checkCreateRight(EntityRecord entityRecord) {
