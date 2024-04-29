@@ -116,7 +116,6 @@ public class ChartService
             easySql.append(" ORDER BY ").append(orderBy);
         }
 
-
         SelectStatement selectStatement = (new QueryHelper()).compileEasySql(this.pm.getMetadataManager(), easySql.toString());
 
         List<List<Object>> dataList = new ArrayList<>();

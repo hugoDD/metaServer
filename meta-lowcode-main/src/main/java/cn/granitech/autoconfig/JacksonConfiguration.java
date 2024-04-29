@@ -13,9 +13,7 @@ import java.text.SimpleDateFormat;
 
 @Configuration
 public class JacksonConfiguration {
-    /* access modifiers changed from: private */
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    /* access modifiers changed from: private */
     public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Bean

@@ -11,109 +11,46 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
-@Component
-public class RedisUtil {
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+public interface RedisUtil {
 
-    public boolean set(String key, Object value) {
-        this.redisTemplate.opsForValue().set(key, value);
-        return true;
 
-    }
+    boolean set(String key, Object value);
 
-    public boolean set(String key, Object value, Long expireTime) {
+    boolean set(String key, Object value, Long expireTime);
 
-        this.redisTemplate.opsForValue().set(key, value);
-        this.redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
-        return true;
+    boolean getAndSet(String key, String value);
 
-    }
+    void remove(String... keys);
 
-    public boolean getAndSet(String key, String value) {
-        this.redisTemplate.opsForValue().getAndSet(key, value);
-        return true;
+    void removePattern(String pattern);
 
-    }
+    void remove(String key);
 
-    public void remove(String... keys) {
-        for (String key : keys) {
-            remove(key);
-        }
-    }
+    boolean exists(String key);
 
-    public void removePattern(String pattern) {
-        Set<String> keys = this.redisTemplate.keys(pattern);
-        if (keys != null && keys.size() > 0) {
-            this.redisTemplate.delete(keys);
-        }
-    }
+    <T> T get(String key);
 
-    public void remove(String key) {
-        if (exists(key)) {
-            this.redisTemplate.delete(key);
-        }
-    }
+    void hmSet(String key, Object hashKey, Object value);
 
-    public boolean exists(String key) {
-        return BooleanUtils.isTrue(this.redisTemplate.hasKey(key));
-    }
+    Object hmGet(String key, Object hashKey);
 
-    public <T> T get(String key) {
-        return (T) this.redisTemplate.opsForValue().get(key);
-    }
+    void lPush(String k, Object v);
 
-    public void hmSet(String key, Object hashKey, Object value) {
-        this.redisTemplate.opsForHash().put(key, hashKey, value);
-    }
+    List<Object> lRange(String k, long l, long l1);
 
-    public Object hmGet(String key, Object hashKey) {
-        return this.redisTemplate.opsForHash().get(key, hashKey);
-    }
+    void addSet(String key, Object value);
 
-    public void lPush(String k, Object v) {
-        this.redisTemplate.opsForList().rightPush(k, v);
-    }
+    void removeSetAll(String key);
 
-    public List<Object> lRange(String k, long l, long l1) {
-        return this.redisTemplate.opsForList().range(k, l, l1);
-    }
+    Boolean isMember(String key, Object member);
 
-    public void addSet(String key, Object value) {
-        this.redisTemplate.opsForSet().add(key, value);
-    }
+    Set<Object> setMembers(String key);
 
-    public void removeSetAll(String key) {
-        SetOperations<String, Object> set = this.redisTemplate.opsForSet();
-        Set<Object> objectSet = set.members(key);
-        if (objectSet != null && !objectSet.isEmpty()) {
-            for (Object o : objectSet) {
-                set.remove(key, o);
-            }
-        }
-    }
+    void zAdd(String key, Object value, double source);
 
-    public Boolean isMember(String key, Object member) {
-        return this.redisTemplate.opsForSet().isMember(key, member);
-    }
+    Set<Object> rangeByScore(String key, double source, double source1);
 
-    public Set<Object> setMembers(String key) {
-        return this.redisTemplate.opsForSet().members(key);
-    }
+    Set<Object> range(String key, Long source, Long source1);
 
-    public void zAdd(String key, Object value, double source) {
-        this.redisTemplate.opsForZSet().add(key, value, source);
-    }
-
-    public Set<Object> rangeByScore(String key, double source, double source1) {
-        return this.redisTemplate.opsForZSet().rangeByScore(key, source, source1);
-    }
-
-    public Set<Object> range(String key, Long source, Long source1) {
-        return this.redisTemplate.opsForZSet().range(key, source, source1);
-    }
-
-    public Set<Object> reverseRange(String key, Long source, Long source1) {
-        return this.redisTemplate.opsForZSet().reverseRange(key, source, source1);
-    }
+    Set<Object> reverseRange(String key, Long source, Long source1);
 }

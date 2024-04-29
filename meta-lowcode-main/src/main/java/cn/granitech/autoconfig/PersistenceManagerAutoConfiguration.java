@@ -19,7 +19,6 @@ public class PersistenceManagerAutoConfiguration {
     @Resource
     RedisUtil redisUtil;
 
-    /* access modifiers changed from: package-private */
     @Bean
     public PersistenceManager persistenceManager(JdbcTemplate jdbcTemplate) {
         PersistenceManagerImpl persistenceManager = new PersistenceManagerImpl(jdbcTemplate, new QueryHelper());

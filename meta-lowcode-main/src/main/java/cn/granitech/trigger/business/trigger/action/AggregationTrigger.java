@@ -21,8 +21,7 @@ import java.util.*;
 
 
 @Component
-public class AggregationTrigger
-        implements BaseTrigger {
+public class AggregationTrigger implements BaseTrigger {
     @Resource
     PersistenceManager pm;
     @Resource
