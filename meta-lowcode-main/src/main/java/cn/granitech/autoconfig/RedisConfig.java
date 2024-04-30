@@ -1,6 +1,8 @@
 package cn.granitech.autoconfig;
 
 import cn.granitech.common.cache.RedisCacheUtil;
+import cn.granitech.common.service.IRateLimiterService;
+import cn.granitech.common.service.impl.RedissonRateLimiterServiceImpl;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +19,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
+@ConditionalOnProperty(name="spring.redis.enabled",havingValue = "true",matchIfMissing=false)
 @Configuration
 public class RedisConfig {
     @Value("${spring.redis.host:}")
@@ -26,10 +28,11 @@ public class RedisConfig {
     private String clusterNodes;
     @Value("${spring.redis.database:}")
     private Integer database;
-    @Value("${spring.redis.password}")
+    @Value("${spring.redis.password:}")
     private String password;
     @Value("${spring.redis.port:}")
     private String port;
+
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
@@ -74,4 +77,11 @@ public class RedisConfig {
     public RedisCacheUtil RedisCacheUtil(RedisTemplate<String, Object> redisTemplate) {
         return new RedisCacheUtil(redisTemplate);
     }
+
+    @Bean
+    public IRateLimiterService rateLimiterService(RedissonClient redissonClient){
+        return new RedissonRateLimiterServiceImpl(redissonClient);
+    }
+
+
 }

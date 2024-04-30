@@ -2,6 +2,7 @@ package cn.granitech.interceptor;
 
 import cn.granitech.aop.annotation.VisitLimit;
 import cn.granitech.business.service.CrudService;
+import cn.granitech.common.service.IRateLimiterService;
 import cn.granitech.exception.ServiceException;
 import cn.granitech.util.IPHelper;
 import cn.granitech.util.ServletHelper;
@@ -40,8 +41,9 @@ public class ApiAuthInterceptor implements HandlerInterceptor {
     CallerContext callerContext;
     @Resource
     CrudService crudService;
+
     @Resource
-    RedissonClient redissonClient;
+    IRateLimiterService rateLimiterService;
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         checkLimit(handler, request);
@@ -93,15 +95,20 @@ public class ApiAuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean checkLimit(Object handler, HttpServletRequest request) {
-        VisitLimit accessLimit;
         if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
-            if (method.isAnnotationPresent(VisitLimit.class) && (accessLimit = method.getAnnotation(VisitLimit.class)) != null) {
-                RRateLimiter rateLimiter = this.redissonClient.getRateLimiter(RedisKeyEnum.TMP_CACHE.getKey(IPHelper.getRequestIp(request) + request.getRequestURI()));
-                rateLimiter.trySetRate(RateType.OVERALL, accessLimit.limit(), accessLimit.sec(), RateIntervalUnit.SECONDS);
-                if (!rateLimiter.tryAcquire()) {
+            VisitLimit accessLimit = method.getAnnotation(VisitLimit.class);
+            if (method.isAnnotationPresent(VisitLimit.class) && accessLimit != null) {
+                String name = RedisKeyEnum.TMP_CACHE.getKey(IPHelper.getRequestIp(request) + request.getRequestURI());
+                if (!rateLimiterService.tryAcquire(name, accessLimit)) {
                     throw new ServiceException("请求过于频繁");
                 }
+
+//                RRateLimiter rateLimiter = this.redissonClient.getRateLimiter(RedisKeyEnum.TMP_CACHE.getKey(IPHelper.getRequestIp(request) + request.getRequestURI()));
+//                rateLimiter.trySetRate(RateType.OVERALL, accessLimit.limit(), accessLimit.sec(), RateIntervalUnit.SECONDS);
+//                if (!rateLimiter.tryAcquire()) {
+//                    throw new ServiceException("请求过于频繁");
+//                }
             }
         }
         return true;

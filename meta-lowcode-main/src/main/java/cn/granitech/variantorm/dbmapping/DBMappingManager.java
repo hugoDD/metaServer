@@ -68,9 +68,6 @@ public class DBMappingManager {
         this.metadataManager.updateEntity(entity);
     }
 
-
-
-
     public void createApprovalSystemFields(Entity entity) {
         int entityCode = entity.getEntityCode();
         Field approvalConfigField = new Field();
