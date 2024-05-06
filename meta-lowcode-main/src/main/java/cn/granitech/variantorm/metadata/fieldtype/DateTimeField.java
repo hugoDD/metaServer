@@ -1,9 +1,7 @@
 package cn.granitech.variantorm.metadata.fieldtype;
 
 
-import cn.granitech.variantorm.HelloWorld;
 import cn.granitech.variantorm.exception.DataAccessException;
-import cn.granitech.variantorm.exception.DuplicateFieldException;
 import cn.granitech.variantorm.metadata.impl.ActualField;
 import cn.granitech.variantorm.persistence.PersistenceManager;
 import cn.granitech.variantorm.pojo.Field;
