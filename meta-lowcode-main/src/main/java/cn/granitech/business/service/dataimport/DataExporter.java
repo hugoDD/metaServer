@@ -33,7 +33,7 @@ public class DataExporter {
     private final Entity dataEntity;
     private final List<Map<String, Object>> queryData;
     private final List<String> selectFields;
-    private List<Field> headFields;
+    private List<Field> headFields = new ArrayList<>();
 
 
     public DataExporter(List<Map<String, Object>> queryData, Entity dataEntity, String selectFields) {
@@ -112,7 +112,7 @@ public class DataExporter {
     }
 
     private Field getRerField(Entity entity, String name) {
-        int dotIndex = name.indexOf(46);
+        int dotIndex = name.indexOf(".");
         if (dotIndex == -1) {
             return entity.getField(name);
         }
