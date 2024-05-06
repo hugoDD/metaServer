@@ -56,10 +56,10 @@ public class EntityHelper {
             map.put(REFERENCE_NAME, field.getReferTo().iterator().next().getName());
         }
         map.put(FIELD_TYPE, field.getType().getName());
-        map.put(IS_NULLABLE, Boolean.valueOf(field.isNullable()));
-        map.put(IS_NAME_FIELD, Boolean.valueOf(field.isNameFieldFlag()));
-        map.put(IS_UPDATABLE, Boolean.valueOf(field.isUpdatable()));
-        map.put(IS_CREATABLE, Boolean.valueOf(field.isCreatable()));
+        map.put(IS_NULLABLE, field.isNullable());
+        map.put(IS_NAME_FIELD, field.isNameFieldFlag());
+        map.put(IS_UPDATABLE, field.isUpdatable());
+        map.put(IS_CREATABLE, field.isCreatable());
         return map;
     }
 
