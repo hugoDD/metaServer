@@ -1,6 +1,6 @@
 package cn.granitech.business.service;
 
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.persistence.EntityRecord;
 import cn.granitech.variantorm.persistence.PersistenceManager;
@@ -21,13 +21,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class QueryCacheImpl implements QueryCache {
-    private final RedisUtil redisUtil;
+    private final CacheUtil cacheUtil;
     private final PersistenceManager pm;
     private final OptionCacheManager optionCacheManager;
     private final TagCacheManager tagCacheManager;
 
-    public QueryCacheImpl(RedisUtil redisUtil, PersistenceManager pm) {
-        this.redisUtil = redisUtil;
+    public QueryCacheImpl(CacheUtil cacheUtil, PersistenceManager pm) {
+        this.cacheUtil = cacheUtil;
         this.optionCacheManager = new OptionCacheManager(pm);
         this.tagCacheManager = new TagCacheManager(pm);
         this.pm = pm;
@@ -64,7 +64,7 @@ public class QueryCacheImpl implements QueryCache {
     }
 
     public IDName getIDName(String referenceId) {
-        String name = this.redisUtil.get(RedisKeyEnum.REFERENCE_CACHE.getKey(referenceId));
+        String name = this.cacheUtil.get(RedisKeyEnum.REFERENCE_CACHE.getKey(referenceId));
         IDName idName;
         if (StringUtils.isBlank(name)) {
             idName = this.loadIDName(ID.valueOf(referenceId));
@@ -76,19 +76,19 @@ public class QueryCacheImpl implements QueryCache {
     }
 
     public boolean updateIDName(IDName idName) {
-        return this.redisUtil.set(RedisKeyEnum.REFERENCE_CACHE.getKey(idName.getId().toString()), idName.getName());
+        return this.cacheUtil.set(RedisKeyEnum.REFERENCE_CACHE.getKey(idName.getId().toString()), idName.getName());
     }
 
     public void deleteIDName(String id) {
-        this.redisUtil.remove(RedisKeyEnum.REFERENCE_CACHE.getKey(id));
+        this.cacheUtil.remove(RedisKeyEnum.REFERENCE_CACHE.getKey(id));
     }
 
     public List<IDName> getIDNameList(String entityName, String refFieldName, String recordId) {
-        return this.redisUtil.get(this.getReferenceListKey(entityName, refFieldName, recordId));
+        return this.cacheUtil.get(this.getReferenceListKey(entityName, refFieldName, recordId));
     }
 
     public boolean updateIDNameList(String entityName, String refFieldName, String recordId, List<IDName> idNameList) {
-        return this.redisUtil.set(this.getReferenceListKey(entityName, refFieldName, recordId), idNameList);
+        return this.cacheUtil.set(this.getReferenceListKey(entityName, refFieldName, recordId), idNameList);
     }
 
     private IDName loadIDName(final ID referenceId) {

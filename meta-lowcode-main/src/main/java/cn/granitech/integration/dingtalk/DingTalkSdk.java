@@ -2,7 +2,7 @@ package cn.granitech.integration.dingtalk;
 
 import cn.granitech.exception.ServiceException;
 import cn.granitech.util.JsonHelper;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.util.SpringHelper;
 import cn.granitech.web.enumration.RedisKeyEnum;
 import cn.granitech.web.pojo.application.DingTalkSetting;
@@ -169,7 +169,7 @@ public class DingTalkSdk {
 
     public static String getAccessToken() {
         DingTalkSetting dingTalkConfig = getDingTalkConfig();
-        RedisUtil redisUtil = SpringHelper.getBean(RedisUtil.class);
+        CacheUtil redisUtil = SpringHelper.getBean(CacheUtil.class);
         if (redisUtil.exists(RedisKeyEnum.TMP_CACHE.getKey(REDIS_TOKEN_KEY))) {
             return redisUtil.get(RedisKeyEnum.TMP_CACHE.getKey(REDIS_TOKEN_KEY));
         }

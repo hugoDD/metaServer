@@ -3,7 +3,7 @@ package cn.granitech.business.service;
 import cn.granitech.exception.ServiceException;
 import cn.granitech.util.CopyEntityHelper;
 import cn.granitech.util.EntityHelper;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.util.SpringHelper;
 import cn.granitech.variantorm.constant.CommonFields;
 import cn.granitech.variantorm.constant.ReservedFields;
@@ -47,7 +47,7 @@ public class EntityManagerService extends BaseService {
     @Resource
     RoleService roleService;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
 
     public EntityManagerService() {
     }

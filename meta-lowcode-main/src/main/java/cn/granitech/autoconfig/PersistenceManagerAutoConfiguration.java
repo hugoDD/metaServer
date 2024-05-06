@@ -2,7 +2,7 @@ package cn.granitech.autoconfig;
 
 import cn.granitech.business.query.QueryHelper;
 import cn.granitech.business.service.QueryCacheImpl;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.variantorm.persistence.PersistenceManager;
 import cn.granitech.variantorm.persistence.impl.PersistenceManagerImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,13 +16,11 @@ import javax.annotation.Resource;
 @EnableConfigurationProperties
 public class PersistenceManagerAutoConfiguration {
 
-    @Resource
-    RedisUtil redisUtil;
 
     @Bean
-    public PersistenceManager persistenceManager(JdbcTemplate jdbcTemplate) {
+    public PersistenceManager persistenceManager(JdbcTemplate jdbcTemplate, CacheUtil cacheUtil) {
         PersistenceManagerImpl persistenceManager = new PersistenceManagerImpl(jdbcTemplate, new QueryHelper());
-        persistenceManager.setQueryCache(new QueryCacheImpl(this.redisUtil, persistenceManager));
+        persistenceManager.setQueryCache(new QueryCacheImpl(cacheUtil, persistenceManager));
         return persistenceManager;
     }
 }

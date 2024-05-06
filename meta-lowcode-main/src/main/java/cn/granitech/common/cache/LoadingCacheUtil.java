@@ -1,22 +1,15 @@
 package cn.granitech.common.cache;
 
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
-public class LoadingCacheUtil implements RedisUtil {
+public class LoadingCacheUtil implements CacheUtil {
 
 
    private final Cache<String, Object> cache = CacheBuilder.newBuilder()

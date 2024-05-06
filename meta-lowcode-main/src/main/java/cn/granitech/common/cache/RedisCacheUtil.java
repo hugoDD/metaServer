@@ -1,18 +1,16 @@
 package cn.granitech.common.cache;
 
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
-public class RedisCacheUtil implements RedisUtil {
+public class RedisCacheUtil implements CacheUtil {
 
     public RedisCacheUtil(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;

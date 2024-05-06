@@ -29,10 +29,10 @@ public class SystemSettingController {
     @Resource
     SystemService systemSettingService;
 
-    @GetMapping({"/getLicenseInfo"})
-    public ResponseBean<LicenseInfo> getLicenseInfo() {
-        return ResponseHelper.ok(this.systemSettingService.getLicenseInfo());
-    }
+//    @GetMapping({"/getLicenseInfo"})
+//    public ResponseBean<LicenseInfo> getLicenseInfo() {
+//        return ResponseHelper.ok(this.systemSettingService.getLicenseInfo());
+//    }
 
     @PostMapping({"/registerLicense"})
     public ResponseBean<LicenseInfo> registerLicense(@RequestBody RegisterLicense registerLicense) {

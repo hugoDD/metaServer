@@ -4,7 +4,7 @@ import cn.granitech.aop.annotation.SystemRight;
 import cn.granitech.exception.ServiceException;
 import cn.granitech.util.EntityHelper;
 import cn.granitech.util.JsonHelper;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.persistence.EntityRecord;
 import cn.granitech.variantorm.pojo.Entity;
@@ -39,7 +39,7 @@ public class LayoutService extends BaseService {
     @Resource
     UserService userService;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
 
     public LayoutService() {
     }

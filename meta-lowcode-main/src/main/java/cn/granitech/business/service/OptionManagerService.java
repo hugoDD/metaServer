@@ -33,7 +33,7 @@ public class OptionManagerService extends BaseService {
         for (KeyValueEntry<String, Integer> optionKv : optionList) {
             EntityRecord optionRecord = this.persistenceManager.newRecord("OptionItem");
             optionRecord.setFieldValue(entityNameFld, entityName);
-            optionRecord.setFieldValue("fieldName", fieldName);
+            optionRecord.setFieldValue(fieldNameFld, fieldName);
             optionRecord.setFieldValue(labelFld, optionKv.getKey());
             optionRecord.setFieldValue(valueFld, optionKv.getValue());
             optionRecord.setFieldValue(displayOrderFld, Integer.valueOf(displayOrder));

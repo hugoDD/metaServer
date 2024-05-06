@@ -3,7 +3,7 @@ package cn.granitech.autoconfig;
 import cn.granitech.business.service.SystemService;
 import cn.granitech.business.service.TodoTaskService;
 import cn.granitech.business.service.UserService;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.variantorm.persistence.PersistenceManager;
 import cn.granitech.variantorm.persistence.cache.QueryCache;
 import cn.granitech.web.enumration.RedisKeyEnum;
@@ -21,7 +21,7 @@ public class InitProject {
     @Resource
     PersistenceManager pm;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
     @Resource
     SystemService systemService;
     @Resource

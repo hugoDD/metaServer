@@ -7,7 +7,7 @@ import cn.granitech.business.service.dataimport.DataImporter;
 import cn.granitech.business.service.dataimport.ImportRule;
 import cn.granitech.business.task.HeavyTask;
 import cn.granitech.business.task.TaskExecutors;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.util.ResponseHelper;
 import cn.granitech.variantorm.persistence.PersistenceManager;
 import cn.granitech.variantorm.pojo.Entity;
@@ -45,7 +45,7 @@ public class ExcelDataController {
     @Resource
     PersistenceManager pm;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
 
     @PostMapping({"exportExcel"})
     public ResponseBean exportExcel(@RequestBody ListQueryRequestBody requestBody) {

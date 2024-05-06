@@ -4,7 +4,7 @@ import cn.granitech.business.service.CrudService;
 import cn.granitech.business.service.UserService;
 import cn.granitech.trigger.business.trigger.BaseTrigger;
 import cn.granitech.util.JsonHelper;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.pojo.IDName;
 import cn.granitech.web.enumration.RedisKeyEnum;
@@ -27,7 +27,7 @@ public class AssignTrigger
     @Resource
     UserService userService;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
     @Resource
     CrudService crudService;
 

@@ -1,17 +1,10 @@
 package cn.granitech.util;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 
-public interface RedisUtil {
+public interface CacheUtil {
 
 
     boolean set(String key, Object value);

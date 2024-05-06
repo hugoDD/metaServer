@@ -2,6 +2,7 @@ package cn.granitech.autoconfig;
 
 import cn.granitech.util.UpgradeScriptHelper;
 import cn.granitech.variantorm.dbmapping.DBMappingManager;
+import cn.granitech.variantorm.metadata.MetadataManager;
 import cn.granitech.variantorm.persistence.PersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +25,13 @@ import java.util.*;
 public class DBMappingManagerAutoConfiguration {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Resource
-    PersistenceManager persistenceManager;
 
     @Bean
-    public DBMappingManager dBMappingManager(JdbcTemplate jdbcTemplate) throws IOException {
+    public DBMappingManager dBMappingManager(PersistenceManager persistenceManager) throws IOException {
+        JdbcTemplate jdbcTemplate = persistenceManager.getJdbcTemplate();
+        MetadataManager metadataManager = persistenceManager.getMetadataManager();
         upgradeDatabase(jdbcTemplate);
-        return new DBMappingManager(jdbcTemplate, this.persistenceManager.getMetadataManager(), this.persistenceManager);
+        return new DBMappingManager(jdbcTemplate, metadataManager,persistenceManager);
     }
 
     public void upgradeDatabase(JdbcTemplate jdbcTemplate) throws IOException {

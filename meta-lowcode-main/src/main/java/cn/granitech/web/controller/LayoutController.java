@@ -2,7 +2,7 @@ package cn.granitech.web.controller;
 
 import cn.granitech.business.service.LayoutService;
 import cn.granitech.interceptor.CallerContext;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.util.ResponseHelper;
 import cn.granitech.variantorm.persistence.EntityRecord;
 import cn.granitech.variantorm.persistence.PersistenceManager;
@@ -36,7 +36,7 @@ public class LayoutController {
     @Resource
     PersistenceManager pm;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
 
     @RequestMapping(
             value = {"/getLayoutList"},

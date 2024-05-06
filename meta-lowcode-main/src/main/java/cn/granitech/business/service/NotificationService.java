@@ -4,7 +4,7 @@ import cn.granitech.integration.dingtalk.DingTalkSdk;
 import cn.granitech.interceptor.CallerContext;
 import cn.granitech.util.EntityHelper;
 import cn.granitech.util.JsonHelper;
-import cn.granitech.util.RedisUtil;
+import cn.granitech.util.CacheUtil;
 import cn.granitech.util.RegexHelper;
 import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.persistence.EntityRecord;
@@ -42,7 +42,7 @@ public class NotificationService extends BaseService {
     @Resource
     CallerContext callerContext;
     @Resource
-    RedisUtil redisUtil;
+    CacheUtil redisUtil;
     @Resource
     SystemSetting systemSetting;
 

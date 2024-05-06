@@ -30,7 +30,7 @@ public class SystemService extends BaseService {
     public static final String[] STATUS_VALUES = {"watermark", "trialVersionFlag", "autoBackup"};
     public static final String SYSTEM_SETTING_ID = "systemSettingId";
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final Map<String, EntityRecord> settingCache = new LinkedHashMap();
+    private final Map<String, EntityRecord> settingCache = new LinkedHashMap<>();
     @Resource
     ServiceInfo serviceInfo;
     @Resource
@@ -45,7 +45,7 @@ public class SystemService extends BaseService {
         for (String key : userUpdateMap.keySet()) {
             EntityRecord entityRecord = this.settingCache.get(key);
             if (entityRecord != null) {
-                entityRecord.setFieldValue("settingValue", userUpdateMap.get(key).toString());
+                entityRecord.setFieldValue(SETTING_VALUE, userUpdateMap.get(key).toString());
                 updateRecord(entityRecord);
             }
         }
