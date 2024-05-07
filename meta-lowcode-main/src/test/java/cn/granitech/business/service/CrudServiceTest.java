@@ -40,7 +40,7 @@ public class CrudServiceTest {
 //        System.out.println(objectMapper.writeValueAsString(users));
     }
 
-    //@Test
+    @Test
     public void testAccount() throws JsonProcessingException {
         List<EntityRecord> accounts = crudService.queryListRecord("Account", null,
                 null, null, null, "accountName", "sponsor");

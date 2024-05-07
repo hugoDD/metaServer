@@ -229,4 +229,29 @@ public class Field {
         setReferenceSetting(newField.getReferenceSetting());
         setFieldViewModel(newField.getFieldViewModel());
     }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "fieldId=" + fieldId +
+                ", entityCode=" + entityCode +
+                ", name='" + name + '\'' +
+                ", label='" + label + '\'' +
+                ", physicalName='" + physicalName + '\'' +
+                ", owner=" + owner +
+                ", type=" + type +
+                ", description='" + description + '\'' +
+                ", displayOrder=" + displayOrder +
+                ", nullable=" + nullable +
+                ", creatable=" + creatable +
+                ", updatable=" + updatable +
+                ", idFieldFlag=" + idFieldFlag +
+                ", nameFieldFlag=" + nameFieldFlag +
+                ", mainDetailFieldFlag=" + mainDetailFieldFlag +
+                ", defaultMemberOfListFlag=" + defaultMemberOfListFlag +
+                ", referTo=" + referTo +
+                ", fieldViewModel=" + fieldViewModel +
+                ", referenceSetting=" + referenceSetting +
+                '}';
+    }
 }
