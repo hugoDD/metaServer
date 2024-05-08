@@ -10,11 +10,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +29,16 @@ class QueryHelperTest {
     void setUp() {
         try (InputStream inputStream = (new ClassPathResource("entitys.json")).getInputStream()) {
             String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            Map<String,Entity> entityList = JsonUtils.readJsonValue(json, new TypeReference<Map<String,Entity>>() {
+            Map<String,EntityBo> stringEntityBoMap = JsonUtils.readJsonValue(json, new TypeReference<Map<String,EntityBo>>() {
             });
-            System.out.println(entityList.values().size());
-            entityList.values().forEach(metadataManager::addEntity);
+            System.out.println(stringEntityBoMap.values().size());
+            stringEntityBoMap.forEach((k,v)->{
+                Entity entity = new Entity();
+                entity.setMetadataManager(metadataManager);
+                BeanUtils.copyProperties(v,entity);
+                v.getFieldSet().forEach(entity::addField);
+                metadataManager.addEntity(entity);
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
