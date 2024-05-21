@@ -427,12 +427,13 @@ public class CrudService extends BaseService {
         } else {
             querySchema.setSelectFields(entity.getFieldSet().stream().map(Field::getName).collect(Collectors.joining(",")));
         }
-
-        String filter = String.format(" [%s] = '%s' ", entity.getIdField().getName(), recordId);
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("recordId",recordId);
+        String filter = String.format(" [%s] = pn_recordId ", entity.getIdField().getName());
         querySchema.setFilter(filter);
         DataQuery dataQuery = this.pm.createDataQuery();
-        List<Map<String, Object>> query = dataQuery.query(querySchema, new Pagination(1, 1), null);
-        if (query != null && query.size() != 0) {
+        List<Map<String, Object>> query = dataQuery.query(querySchema, new Pagination(1, 1), paramMap);
+        if (query != null && !query.isEmpty()) {
             Map<String, Object> resultMap = query.get(0);
             EntityRecord entityRecord = this.newRecord(entity.getName());
             if (entity.isAuthorizable()) {
@@ -450,8 +451,8 @@ public class CrudService extends BaseService {
                         QuerySchema detailQuerySchema = new QuerySchema();
                         detailQuerySchema.setMainEntity(detailEntity.getName());
                         detailQuerySchema.setSelectFields(String.join(",", detailEntity.getFieldNames()));
-                        detailQuerySchema.setFilter(String.format("%s = '%s'", detailEntity.getMainDetailField().getName(), recordId.getId()));
-                        resultMap.put(detailEntity.getName(), dataQuery.query(detailQuerySchema, null));
+                        detailQuerySchema.setFilter(String.format("%s = pn_recordId", detailEntity.getMainDetailField().getName()));
+                        resultMap.put(detailEntity.getName(), dataQuery.query(detailQuerySchema, null,paramMap));
                     });
                 }
 

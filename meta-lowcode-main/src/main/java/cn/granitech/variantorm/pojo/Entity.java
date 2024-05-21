@@ -180,7 +180,9 @@ public class Entity {
 
     public void setNameField(Field nameField) {
         this.nameField = nameField;
-        nameField.setNameFieldFlag(true);
+        if(nameField!=null){
+            nameField.setNameFieldFlag(true);
+        }
     }
 
     public Collection<Field> getFieldSet() {

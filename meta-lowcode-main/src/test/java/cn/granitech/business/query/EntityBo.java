@@ -57,6 +57,6 @@ public class EntityBo {
     )
     private EntityBo mainEntity;
 
-    private final List<Field> fieldSet = new ArrayList<>();
+    private final List<FieldBo> fieldSet = new ArrayList<>();
 
 }

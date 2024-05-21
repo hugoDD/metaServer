@@ -21,51 +21,69 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://gz-cdb-m0cv5phj.sql.tencentcdb.com:63196/variantorm?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
-#    username: yami
-#    password: yami123@db!!
-    url: jdbc:mysql://127.0.0.1:7420/variantorm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false&&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
-    sql-script-encoding: UTF-8
-    username: root
-    password: test123456
-#    hikari:
-#      #池中维护的最小空闲连接数
-#      minimum-idle: 10
-#      #池中最大连接数，包括闲置和使用中的连接
-#      maximum-pool-size: 50
-#      #连接池的用户定义名称
-#      pool-name: hhrHikariCP
-#      #连接允许在池中闲置的最长时间(ms)
-#      idle-timeout: 30000
-#      #池中连接最长生命周期(ms)
-#      max-lifetime: 1800000
-#      #等待来自池的连接的最大毫秒数(ms)
-#      connection-timeout: 30000
-#      #设置连接被占用的超时时间(ms)
-#      leak-detection-threshold: 40000
-  redis:
-    host: 127.0.0.1
-    port: 7421
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://gz-cdb-m0cv5phj.sql.tencentcdb.com:63196/variantorm?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+    username: yami
+    password: yami123@db!!
+#    url: jdbc:mysql://127.0.0.1:7420/variantorm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false&&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
+#    sql-script-encoding: UTF-8
+#    username: root
+#    password: test123456
+    hikari:
+      #池中维护的最小空闲连接数
+      minimum-idle: 1
+      #池中最大连接数，包括闲置和使用中的连接
+      maximum-pool-size: 10
+      #连接池的用户定义名称
+      pool-name: hhrHikariCP
+      #连接允许在池中闲置的最长时间(ms)
+      idle-timeout: 30000
+      #池中连接最长生命周期(ms)
+      max-lifetime: 1800000
+      #等待来自池的连接的最大毫秒数(ms)
+      connection-timeout: 30000
+      #设置连接被占用的超时时间(ms)
+      leak-detection-threshold: 40000
+      connection-test-query: SELECT 1
+#  redis:
+#    enabled: false
+#    host: 127.0.0.1
+#    port: 6379
+#
+#    # 连接超时时间（记得添加单位，Duration）
+#    timeout: 10000ms
+#    # Redis默认情况下有16个分片，这里配置具体使用的分片
+#    database: 14
+#    lettuce:
+#      pool:
+#        # 连接池最大连接数（使用负值表示没有限制） 默认 8
+#        max-active: 8
+#        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+#        max-wait: -1ms
+#        # 连接池中的最大空闲连接 默认 8
+#        max-idle: 8
+#        # 连接池中的最小空闲连接 默认 0
+#        min-idle: 0
+#    password:
 
-    # 连接超时时间（记得添加单位，Duration）
-    timeout: 10000ms
-    # Redis默认情况下有16个分片，这里配置具体使用的分片
-    database: 14
-    lettuce:
-      pool:
-        # 连接池最大连接数（使用负值表示没有限制） 默认 8
-        max-active: 8
-        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
-        max-wait: -1ms
-        # 连接池中的最大空闲连接 默认 8
-        max-idle: 8
-        # 连接池中的最小空闲连接 默认 0
-        min-idle: 0
-    password:
+management:
+  health:
+    redis:
+      enabled: false
 
-plugin:
-  mainPackage: cn.granitech
-  runMode: prod
-  pluginPath:
-    - D:\code\demo\metaServer\plugins
+#plugin:
+#  mainPackage: cn.granitech
+#  runMode: prod
+#  pluginPath:
+#    - C:\code\gitee\lowcode\plugins
+
+magic-api:
+  show-url: true
+  web: /magic/web
+  resource:
+    #    type: file  # 配置接口存储方式，这里选择存在数据库中
+    #    table-name: magic_api_file_v2  # 数据库中的表名
+    readonly: false
+    prefix: /magic-api  # 前缀
+    location: D:\project\magic-api

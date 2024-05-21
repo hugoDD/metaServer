@@ -86,22 +86,22 @@ public class CrudController extends BaseController {
 
     @RequestMapping({"/assignRecord"})
     public ResponseBean<Integer> assignRecord(@RequestBody BatchOperation param) {
-        return ResponseHelper.ok(Integer.valueOf(this.crudService.assignRecord(ID.valueOf(param.getToUser()), param.getRecordIds(), param.getCascades())), "success");
+        return ResponseHelper.ok(this.crudService.assignRecord(ID.valueOf(param.getToUser()), param.getRecordIds(), param.getCascades()), "success");
     }
 
     @PostMapping({"/shareRecord"})
     public ResponseBean shareRecord(@RequestBody BatchOperation param) {
-        return ResponseHelper.ok(Integer.valueOf(this.shareAccessService.shareRecord(param.getRecordIds(), param.getToUsersId(), param.getCascades(), param.isWithUpdate())));
+        return ResponseHelper.ok(this.shareAccessService.shareRecord(param.getRecordIds(), param.getToUsersId(), param.getCascades(), param.isWithUpdate()));
     }
 
     @PostMapping({"/cancelShareRecord"})
     public ResponseBean cancelShareRecord(@RequestParam("userType") Integer userType, @RequestBody BatchOperation param) {
-        return ResponseHelper.ok(Integer.valueOf(this.shareAccessService.cancelShareRecord(userType, param.getRecordIds(), param.getToUsersId())));
+        return ResponseHelper.ok(this.shareAccessService.cancelShareRecord(userType, param.getRecordIds(), param.getToUsersId()));
     }
 
     @RequestMapping({"/deleteRecord"})
     public ResponseBean deleteRecord(@RequestBody BatchOperation param) {
-        return ResponseHelper.ok(Integer.valueOf(this.crudService.delete(param.getRecordIds(), param.getCascades(), "手动删除")), "success");
+        return ResponseHelper.ok(this.crudService.delete(param.getRecordIds(), param.getCascades(), "手动删除"), "success");
     }
 
     @GetMapping({"getEntityCodeList"})
@@ -125,7 +125,7 @@ public class CrudController extends BaseController {
     @RequestMapping({"/checkStatus"})
     public ResponseBean<Map<String, Object>> checkStatus() {
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("noteCount", Integer.valueOf(this.notificationService.queryNoteCount()));
+        resultMap.put("noteCount", this.notificationService.queryNoteCount());
         return ResponseHelper.ok(resultMap);
     }
 }

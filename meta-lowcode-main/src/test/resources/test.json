@@ -1,0 +1,569 @@
+{
+  "entityId": "0000001-da4c40fd5bf2442e8876ca2bf9325bb5",
+  "name": "User",
+  "label": "用户",
+  "physicalName": "t_user",
+  "entityCode": 21,
+  "detailEntityFlag": false,
+  "layoutable": true,
+  "listable": true,
+  "authorizable": true,
+  "shareable": false,
+  "assignable": false,
+  "tags": null,
+  "idField": {
+    "name": "userId",
+    "label": "用户Id主键"
+  },
+  "nameField": {
+    "name": "userName",
+    "label": "用户名称"
+  },
+  "detailEntitySet": null,
+  "mainEntity": null,
+  "fieldSet": [
+    {
+      "fieldId": "0000002-1d7b3217965740dd8c1dc02c42ac5c77",
+      "entityCode": 21,
+      "name": "userId",
+      "label": "用户Id主键",
+      "physicalName": "userId",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "PrimaryKey",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": true,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-13250634eeb747d3bbf38521ef81a02f",
+      "entityCode": 21,
+      "name": "createdOn",
+      "label": "创建时间",
+      "physicalName": "createdOn",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "DateTime",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-21dd1ebe60ba44a6a5979ad8389d44db",
+      "entityCode": 21,
+      "name": "createdBy",
+      "label": "创建用户",
+      "physicalName": "createdBy",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Reference",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "User",
+          "label": "用户"
+        }
+      ],
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-fdb3e8f617c24d8ab777ec62160cb15a",
+      "entityCode": 21,
+      "name": "modifiedOn",
+      "label": "最近修改时间",
+      "physicalName": "modifiedOn",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "DateTime",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-f6c5afa38f3a45bf929d0ad61ebdb8ba",
+      "entityCode": 21,
+      "name": "modifiedBy",
+      "label": "修改用户",
+      "physicalName": "modifiedBy",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Reference",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "User",
+          "label": "用户"
+        }
+      ],
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-e478114b892f4ec98c837999d0bd34d0",
+      "entityCode": 21,
+      "name": "ownerUser",
+      "label": "所属用户",
+      "physicalName": "ownerUser",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Reference",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "User",
+          "label": "用户"
+        }
+      ],
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-752fd630ebec4bc3ae78b55870af63da",
+      "entityCode": 21,
+      "name": "ownerDepartment",
+      "label": "所属部门",
+      "physicalName": "ownerDepartment",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Reference",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": false,
+      "updatable": false,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "Department",
+          "label": "部门"
+        }
+      ],
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-7513d702731b4931942ad493cc5b2a65",
+      "entityCode": 21,
+      "name": "departmentId",
+      "label": "部门",
+      "physicalName": "departmentId",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Reference",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": [
+        {
+          "name": "Department",
+          "label": "部门"
+        }
+      ],
+      "fieldViewModel": {
+        "searchDialogWidth": 510
+      },
+      "referenceSetting": [
+        {
+          "entityName": "Department",
+          "fieldList": [
+            "departmentName",
+            "parentDepartmentId"
+          ]
+        }
+      ]
+    },
+    {
+      "fieldId": "0000002-f2cb605fe6d6436592b96a48ecff5cea",
+      "entityCode": 21,
+      "name": "userName",
+      "label": "用户名称",
+      "physicalName": "userName",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Text",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": true,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 2,
+        "maxLength": 15
+      },
+      "referenceSetting": []
+    },
+    {
+      "fieldId": "0000002-a2784238ef4b485f83fc127f4ce6f632",
+      "entityCode": 21,
+      "name": "loginPwd",
+      "label": "登录密码",
+      "physicalName": "loginPwd",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Password",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 6,
+        "maxLength": 30
+      },
+      "referenceSetting": []
+    },
+    {
+      "fieldId": "0000002-b6d5956369bd4ff49665fde70193721e",
+      "entityCode": 21,
+      "name": "loginName",
+      "label": "登录账号名",
+      "physicalName": "loginName",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Text",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 1,
+        "maxLength": 30,
+        "validators": [
+          "letterStartNumberIncluded"
+        ]
+      },
+      "referenceSetting": []
+    },
+    {
+      "fieldId": "0000002-e33e1fc889b64ab598a94258cce5740b",
+      "entityCode": 21,
+      "name": "jobTitle",
+      "label": "职务",
+      "physicalName": "jobTitle",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Option",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": null,
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-41684e98ac7b4e32bf4ea5ffc536cd34",
+      "entityCode": 21,
+      "name": "roles",
+      "label": "权限角色",
+      "physicalName": "roles",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "ReferenceList",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "Role",
+          "label": "权限角色"
+        }
+      ],
+      "fieldViewModel": {},
+      "referenceSetting": [
+        {
+          "entityName": "Role",
+          "fieldList": [
+            "roleName",
+            "disabled"
+          ]
+        }
+      ]
+    },
+    {
+      "fieldId": "0000002-84801abecdee4232a5f98b14f20d467b",
+      "entityCode": 21,
+      "name": "disabled",
+      "label": "是否禁用",
+      "physicalName": "disabled",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Boolean",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": false,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-5669ebe6afa54821a8c36396650a0b87",
+      "entityCode": 21,
+      "name": "mobilePhone",
+      "label": "手机号",
+      "physicalName": "mobilePhone",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Text",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 11,
+        "maxLength": 11,
+        "validators": [
+          "mobile"
+        ]
+      },
+      "referenceSetting": []
+    },
+    {
+      "fieldId": "0000002-f7ca7e44cdc14942ab9cb3999e3f4dc8",
+      "entityCode": 21,
+      "name": "email",
+      "label": "邮箱",
+      "physicalName": "email",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Text",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": true,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 0,
+        "maxLength": 200,
+        "validators": [
+          "email"
+        ]
+      },
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-e478114b892f4ec98c837999d0b777d0",
+      "entityCode": 21,
+      "name": "ownerTeam",
+      "label": "所属团队",
+      "physicalName": "ownerTeam",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "ReferenceList",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": [
+        {
+          "name": "Team",
+          "label": "团队"
+        }
+      ],
+      "fieldViewModel": null,
+      "referenceSetting": null
+    },
+    {
+      "fieldId": "0000002-9015f41a55eb436aa937c3f259f9c04b",
+      "entityCode": 21,
+      "name": "avatar",
+      "label": "头像",
+      "physicalName": "avatar",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Picture",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": {
+        "maxFileCount": 1,
+        "fileMaxSize": 5,
+        "uploadFileTypes": [],
+        "uploadHint": "",
+        "validators": []
+      },
+      "referenceSetting": []
+    },
+    {
+      "fieldId": "0000002-95a01257f4844734961a1700f5b5fb10",
+      "entityCode": 21,
+      "name": "dingTalkUserId",
+      "label": "钉钉用户ID",
+      "physicalName": "dingTalkUserId",
+      "owner": {
+        "name": "User",
+        "label": "用户"
+      },
+      "type": "Text",
+      "description": null,
+      "displayOrder": 0,
+      "nullable": true,
+      "creatable": true,
+      "updatable": true,
+      "idFieldFlag": false,
+      "nameFieldFlag": false,
+      "mainDetailFieldFlag": false,
+      "defaultMemberOfListFlag": false,
+      "referTo": null,
+      "fieldViewModel": {
+        "minLength": 0,
+        "maxLength": 200,
+        "validators": []
+      },
+      "referenceSetting": null
+    }
+  ]
+}

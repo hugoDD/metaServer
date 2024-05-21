@@ -9,7 +9,7 @@ import cn.granitech.variantorm.pojo.QuerySchema;
 import org.apache.commons.lang3.StringUtils;
 
 public class EasySQLHelper {
-    private static String generateSql(QuerySchema querySchema, Pagination pagination) {
+    public static String generateSql(QuerySchema querySchema, Pagination pagination) {
         StringBuilder sql = new StringBuilder();
         String selectFields =  querySchema.getSelectFields().trim();
         if (",".equals(selectFields.substring(selectFields.length() - 1))) {

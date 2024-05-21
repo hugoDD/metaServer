@@ -1,6 +1,7 @@
 package cn.granitech.business.service;
 
 
+import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.persistence.EntityRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:
@@ -30,8 +33,10 @@ public class CrudServiceTest {
 
     @Test
     public void testUserQuery() throws JsonProcessingException {
-        List<EntityRecord> users = crudService.queryListRecord("User", " [departmentId.departmentName] like '%公司%' ",
-                null, null, null);
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("depName","%公司%");
+        List<EntityRecord> users = crudService.queryListRecord("User", " [departmentId.departmentName] like pn_depName ",
+                paramMap, null, null,"userId","userName");
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println(objectMapper.writeValueAsString(users));
 
@@ -42,8 +47,9 @@ public class CrudServiceTest {
 
     @Test
     public void testAccount() throws JsonProcessingException {
-        List<EntityRecord> accounts = crudService.queryListRecord("Account", null,
-                null, null, null, "accountName", "sponsor");
+        ID id = new ID("0000021-00000000000000000000000000000001");
+
+        EntityRecord accounts = crudService.queryById(id,  "userId", "userName");
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println(objectMapper.writeValueAsString(accounts));
     }

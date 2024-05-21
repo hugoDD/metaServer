@@ -73,7 +73,7 @@ public class RightManager {
                     querySchema.setFilter(String.format("%s = '%s'", entity.getIdField().getName(), entityRecord.getFieldValue(entity.getIdField().getName())));
                     querySchema.setSelectFields(String.format("%s.ownerUser,%s.ownerDepartment", entity.getMainDetailField().getName(), entity.getMainDetailField().getName()));
                     List<Map<String, Object>> detailList = this.pm.createDataQuery().query(querySchema, new Pagination(1, 1));
-                    if (detailList == null || detailList.size() == 0) {
+                    if (detailList == null || detailList.isEmpty()) {
                         return false;
                     }
                     ownerUser = ((IDName) detailList.get(0).get(String.format("%s.ownerUser", entity.getMainDetailField().getName()))).getId();

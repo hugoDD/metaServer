@@ -61,7 +61,7 @@ public class UserService extends BaseService {
         if (userId == null) {
             return null;
         } else {
-            if (this._userCache.size() <= 0) {
+            if (this._userCache.isEmpty()) {
                 this.loadUserCache();
             }
 
@@ -100,7 +100,7 @@ public class UserService extends BaseService {
         if (userId == null) {
             return null;
         } else {
-            if (this._userCache.size() <= 0) {
+            if (this._userCache.isEmpty()) {
                 this.loadUserCache();
             }
 
@@ -109,7 +109,7 @@ public class UserService extends BaseService {
     }
 
     public ID getDepartmentIdOfUser(ID userId) {
-        if (this._userCache.size() <= 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
@@ -121,7 +121,7 @@ public class UserService extends BaseService {
         if (departmentId == null) {
             return null;
         } else {
-            if (this._departmentCache.size() <= 0) {
+            if (this._departmentCache.isEmpty()) {
                 this.loadDepartmentCache();
             }
 
@@ -130,7 +130,7 @@ public class UserService extends BaseService {
     }
 
     public List<EntityRecord> getTeamOrRoleUser(ID id) {
-        if (this._userCache.size() == 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
@@ -158,7 +158,7 @@ public class UserService extends BaseService {
     }
 
     public List<ID> getTeamIDListOfUser(ID userId) {
-        if (this._userCache.size() == 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
@@ -168,17 +168,17 @@ public class UserService extends BaseService {
     }
 
     public List<ID> getRoleIDListOfUser(ID userId) {
-        if (this._userCache.size() <= 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
         EntityRecord user = this._userCache.get(userId);
-        ID[] userRoles = user.getFieldValue("roles");
+        ID[] userRoles = user.getFieldValue(ROLES);
         return userRoles == null ? new ArrayList<>() : Arrays.asList(userRoles);
     }
 
     public Set<ID> getUserListById(ID id) {
-        if (this._userCache.size() == 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
@@ -188,12 +188,12 @@ public class UserService extends BaseService {
             EntityRecord user = entry.getValue();
             ID[] userTeams;
             if (23 == id.getEntityCode()) {
-                userTeams = user.getFieldValue("roles");
+                userTeams = user.getFieldValue(ROLES);
                 if (userTeams != null && Arrays.asList(userTeams).contains(id)) {
                     userIdSet.add(user.id());
                 }
             } else if (22 == id.getEntityCode()) {
-                ID department = user.getFieldValue("departmentId");
+                ID department = user.getFieldValue(DEPARTMENT_ID);
                 if (id.equals(department)) {
                     userIdSet.add(user.id());
                 }
@@ -232,7 +232,7 @@ public class UserService extends BaseService {
     }
 
     private boolean checkSameUserName(String userName, ID userId) {
-        if (this._userCache.size() == 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
 
@@ -245,7 +245,7 @@ public class UserService extends BaseService {
     }
 
     private boolean checkSameLoginName(String loginName, ID userId) {
-        if (this._userCache.size() <= 0) {
+        if (this._userCache.isEmpty()) {
             this.loadUserCache();
         }
         return checkSameUserName(loginName, userId);
@@ -344,7 +344,7 @@ public class UserService extends BaseService {
     }
 
     public List<Map<String, Object>> buildDepartmentTree() {
-        if (this._departmentCache.size() <= 0) {
+        if (this._departmentCache.isEmpty()) {
             this.loadDepartmentCache();
         }
 

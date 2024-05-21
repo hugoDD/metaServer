@@ -1,0 +1,14 @@
+{
+  "properties" : { },
+  "id" : "10476841525139472384",
+  "name" : "API样例",
+  "type" : "api",
+  "parentId" : "0",
+  "path" : "/exampleApi",
+  "createTime" : null,
+  "updateTime" : 1679879297593,
+  "createBy" : null,
+  "updateBy" : null,
+  "paths" : [ ],
+  "options" : [ ]
+}

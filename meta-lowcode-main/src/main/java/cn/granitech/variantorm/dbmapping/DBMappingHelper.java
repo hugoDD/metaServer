@@ -99,8 +99,8 @@ public class DBMappingHelper {
         Field field = new Field();
         Entity entity = mdm.getEntity(entityCode);
         field.setOwner(entity);
-        String a6 = rs.getString(MetaFieldColumns.fieldId);
-        field.setFieldId(new ID(a6));
+        String fieldId = rs.getString(MetaFieldColumns.fieldId);
+        field.setFieldId(new ID(fieldId));
         field.setEntityCode(entityCode);
         field.setName(rs.getString(MetaFieldColumns.name));
         field.setLabel(rs.getString(MetaFieldColumns.label));

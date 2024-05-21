@@ -12,21 +12,16 @@ import cn.granitech.variantorm.pojo.Field;
 import cn.granitech.variantorm.pojo.Pagination;
 import cn.granitech.variantorm.pojo.QuerySchema;
 import cn.granitech.variantorm.util.MDHelper;
-import cn.hutool.core.util.PageUtil;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.PagerUtils;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 public class DataQueryImpl implements DataQuery {
     private final PersistenceManager pm;
-    private static final String SQL_CALC_FOUND_ROWS = " SQL_CALC_FOUND_ROWS ";
     private final QueryCache queryCache;
-    private static final String SELECT_FOUND_ROWS = "; SELECT FOUND_ROWS(); ";
 
 
     @Override
@@ -44,12 +39,8 @@ public class DataQueryImpl implements DataQuery {
         return resultList;
     }
 
-    static void doCascadeQuery(DataQueryImpl dataQuery, ResultSet resultSet, List<String> queryFields, PersistenceManager pm, QuerySchema querySchema, QueryCache queryCache, List<Map<String, Object>> resultList) {
-        dataQuery.doCascadeQuery(resultSet, queryFields, pm, querySchema, queryCache, resultList);
-    }
-
     private void handleParam(Map<String, Object> paramMap) {
-        if (paramMap == null || paramMap.size() <= 0) {
+        if (paramMap == null || paramMap.isEmpty()) {
             return;
         }
         for (String key : paramMap.keySet()) {
@@ -62,13 +53,11 @@ public class DataQueryImpl implements DataQuery {
                 paramMap.put(key, (Boolean) value ? 1 : 0);
                 continue;
             }
-            if (value != null) continue;
+            if (value != null) {
+                continue;
+            }
             paramMap.put(key, null);
         }
-    }
-
-    static QueryCache getQueryCache(DataQueryImpl x0) {
-        return x0.queryCache;
     }
 
     /*
@@ -86,7 +75,7 @@ public class DataQueryImpl implements DataQuery {
         Map<String, Object> cascadeFieldMap = new LinkedHashMap<>();
         int paramInt = 1;
         int len = queryFields.size();
-        for (;paramInt<=len;) {
+        while (paramInt<=len) {
             String cascadeField = queryFields.get(paramInt-1);
             FieldType fieldType = MDHelper.getFieldTypeOfCascadeField(pm.getMetadataManager(), querySchema.getMainEntity(), cascadeField);
             String entityName = MDHelper.getEntityOfCascadeField(pm.getMetadataManager(), querySchema.getMainEntity(), cascadeField);
@@ -101,10 +90,6 @@ public class DataQueryImpl implements DataQuery {
             }
         }
         resultList.add(cascadeFieldMap);
-    }
-
-    static PersistenceManager getPersistenceManager(DataQueryImpl x0) {
-        return x0.pm;
     }
 
     private void doQuery(QuerySchema querySchema, Map<String, Object> paramMap, Pagination pagination, List<Map<String, Object>> resultList) {

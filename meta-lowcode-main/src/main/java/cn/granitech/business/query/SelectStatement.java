@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class SelectStatement extends cn.granitech.variantorm.persistence.queryCompiler.SelectStatement {
@@ -23,7 +24,7 @@ public class SelectStatement extends cn.granitech.variantorm.persistence.queryCo
     private final Map<String, String> joinAsMap = new HashMap<>();
     private final StringBuffer joinSql = new StringBuffer();
     private final StringBuffer isDeleteSql = new StringBuffer();
-    private Integer asIndex = 1;
+    private AtomicInteger asIndex = new AtomicInteger(1);
     private SelectStatement superSelect;
     private MetadataManager metadata;
     private Entity mainEntity;
@@ -210,6 +211,13 @@ public class SelectStatement extends cn.granitech.variantorm.persistence.queryCo
 
     private Map<String, Field> getFieldMap(Set<String> fullColumnNames) {
         Map<String, Field> fieldMap = new HashMap<>();
+
+//        for (String fullColumnName : fullColumnNames){
+//            if(fullColumnName.startsWith(PARAMETER_NAME)){
+//
+//            }
+//        }
+
         Iterator<String> var3 = fullColumnNames.iterator();
 
         while (true) {
@@ -302,10 +310,8 @@ public class SelectStatement extends cn.granitech.variantorm.persistence.queryCo
     }
 
     private String createdAsName() {
-        StringBuilder var10000 = (new StringBuilder()).append("t_");
-        Integer var1 = this.asIndex;
-        this.asIndex = this.asIndex + 1;
-        return var10000.append(var1).toString();
+
+        return "t_"+this.asIndex.getAndIncrement();
     }
 
     public String toString() {

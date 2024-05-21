@@ -12,14 +12,15 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class SelectStatement {
     private final ParseTree tree;
     private final List<String> ruleNames;
-    private Integer asIndex = 1;
+    private AtomicInteger asIndex = new AtomicInteger(1);
     private SelectStatement superSelect;
-    private final List<String> SUPER_TABLE = Arrays.stream(new String[]{"_outer", "_"}).collect(Collectors.toList());
+    private final List<String> SUPER_TABLE = Arrays.asList("_outer", "_");
     private final String PARAMETER_NAME = "pn_";
     private final StringBuffer sql = new StringBuffer();
     private MetadataManager metadata;
@@ -262,9 +263,8 @@ public class SelectStatement {
     }
 
     private String createdAsName() {
-        Integer n = this.asIndex;
-        this.asIndex = this.asIndex + 1;
-        return "t_" + n;
+
+        return "t_" + asIndex.getAndIncrement();
     }
 
     public String toString() {

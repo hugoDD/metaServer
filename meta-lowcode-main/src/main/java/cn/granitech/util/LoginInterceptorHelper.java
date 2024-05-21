@@ -1,7 +1,7 @@
 package cn.granitech.util;
 
 public class LoginInterceptorHelper {
-    private static String SKIP_INTERCEPTOR_PATH = ".*/((index.html)|(.*.ico)|(css/)|(js/)|(fonts/)|(user/login)|(dingTalk/*)|(picture/get)|(anon)|(queryPublic)|(img/)).*";
+    private static String SKIP_INTERCEPTOR_PATH = ".*/((index.html)|(magic/*)|(magic-api/*)|(.*.ico)|(css/)|(js/)|(fonts/)|(user/login)|(dingTalk/*)|(picture/get)|(anon)|(queryPublic)|(img/)).*";
 
     public static boolean check(String path) {
         return path.matches(SKIP_INTERCEPTOR_PATH);

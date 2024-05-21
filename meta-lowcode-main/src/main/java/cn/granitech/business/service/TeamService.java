@@ -13,11 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cn.granitech.variantorm.constant.SystemEntities.Team;
+
 @Service
 public class TeamService extends BaseService {
     public static final String TEAM_ID = "teamId";
     public static final String TEAM_NAME = "teamName";
-    private final Map<ID, EntityRecord> teamCache = new LinkedHashMap();
+    private final Map<ID, EntityRecord> teamCache = new LinkedHashMap<>();
     @Resource
     UserService userService;
 
@@ -60,16 +62,14 @@ public class TeamService extends BaseService {
     }
 
     public List<EntityRecord> listTeam(String search) {
-        Object[] objArr = new Object[1];
         if (!StringUtils.isNotBlank(search)) {
             search = "";
         }
-        objArr[0] = search;
-        return queryListRecord("Team", String.format(" [disabled]=0 and [teamName] like '%%%s%%' ", objArr), null, null, null, TEAM_ID, TEAM_NAME);
+        return queryListRecord(Team, String.format(" [disabled]=0 and [teamName] like '%%%s%%' ", search), null, null, null, TEAM_ID, TEAM_NAME);
     }
 
     private void loadTeamCache() {
-        List<EntityRecord> teamList = queryListRecord("Team", null, null, null, null);
+        List<EntityRecord> teamList = queryListRecord(Team, null, null, null, null);
         this.teamCache.clear();
         for (EntityRecord team : teamList) {
             this.teamCache.put(team.getFieldValue(TEAM_ID), team);
