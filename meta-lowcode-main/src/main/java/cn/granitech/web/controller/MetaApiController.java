@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.Map;
 
-@RequestMapping({"/metaApi"})
+@RequestMapping({"/metaApiConfig"})
 @RestController
 public class MetaApiController extends BaseController {
     @Resource
@@ -30,13 +30,13 @@ public class MetaApiController extends BaseController {
 
     @VisitLimit(limit = 1, sec = 5)
     @RequestMapping({"/saveRecord"})
-    public ResponseBean<FormQueryResult> saveRecord(@RequestParam("entity") String entityName, @RequestParam("id") String recordId, @RequestBody Map<String, Object> dataMap) {
-        return this.crudController.saveRecord(entityName, recordId, dataMap);
+    public ResponseBean<FormQueryResult> saveRecord(@RequestParam("id") String recordId, @RequestBody Map<String, Object> dataMap) {
+        return this.crudController.saveRecord("MetaApi", recordId, dataMap);
     }
 
     @VisitLimit(limit = 1, sec = 5)
     @RequestMapping({"/deleteRecord"})
-    public ResponseBean deleteRecord(@RequestBody BatchOperation param) {
+    public ResponseBean<?> deleteRecord(@RequestBody BatchOperation param) {
         return this.crudController.deleteRecord(param);
     }
 }
