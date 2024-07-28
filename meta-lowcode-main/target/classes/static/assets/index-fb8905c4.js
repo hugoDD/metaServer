@@ -1,1 +1,0 @@
-import{u as a}from"./vue-router-414ebc36.js";import{r,p as e,o as s,a as t,t as u,E as o}from"./@vue-1ad4818c.js";const m={__name:"index",setup(m){const n=a();let p=r("");return r(!1),e((()=>{p.value=n.currentRoute.value.params.prarm})),(a,r)=>(s(),t("div",null,"测试--"+u(o(p)),1))}};export{m as default};
