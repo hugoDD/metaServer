@@ -1,6 +1,8 @@
 package cn.granitech.business.service;
 
 import cn.granitech.util.JsonHelper;
+import cn.granitech.variantorm.constant.MetaEntityColumns;
+import cn.granitech.variantorm.constant.MetaFieldColumns;
 import cn.granitech.variantorm.constant.SystemEntities;
 import cn.granitech.variantorm.metadata.ID;
 import cn.granitech.variantorm.persistence.EntityRecord;
@@ -99,8 +101,8 @@ public class RoleService extends BaseService {
 
             Map<String, Object> resultMap = this._roleCache.get(roleList.get(0));
 
-            for (int i = 1; i < roleList.size(); ++i) {
-                Map<String, Object> newMap = this._roleCache.get(roleList.get(i));
+            for (ID roleId : roleList) {
+                Map<String, Object> newMap = this._roleCache.get(roleId);
                 if (newMap != null) {
                     this.mergeRightMap(resultMap, newMap);
                 }
@@ -125,9 +127,8 @@ public class RoleService extends BaseService {
             }
 
         });
-        SystemRightEnum[] var5 = SystemRightEnum.values();
 
-        for (SystemRightEnum role : var5) {
+        for (SystemRightEnum role : SystemRightEnum.values()) {
             rightMap.put(role.getCode(), buildAdminRole);
         }
 
@@ -140,10 +141,10 @@ public class RoleService extends BaseService {
         entitySet.forEach((entity) -> {
             if (!entity.isDetailEntityFlag() && !SystemEntities.isInternalEntity(entity.getName())) {
                 Map<String, Object> entityMap = new HashMap<>();
-                entityMap.put("name", entity.getName());
-                entityMap.put("label", entity.getLabel());
-                entityMap.put("entityCode", entity.getEntityCode());
-                entityMap.put("authorizable", entity.isAuthorizable());
+                entityMap.put(MetaEntityColumns.name, entity.getName());
+                entityMap.put(MetaEntityColumns.label, entity.getLabel());
+                entityMap.put(MetaEntityColumns.entityCode, entity.getEntityCode());
+                entityMap.put(MetaEntityColumns.authorizable, entity.isAuthorizable());
                 resultList.add(entityMap);
             }
 
