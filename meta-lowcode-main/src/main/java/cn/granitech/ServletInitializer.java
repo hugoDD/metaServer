@@ -15,7 +15,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class ServletInitializer extends SpringBootServletInitializer {
 
     public ServletInitializer() {
-        System.out.println("初始化ServletInitializer...");
+        logger.info("初始化ServletInitializer...");
     }
 
     @Override
