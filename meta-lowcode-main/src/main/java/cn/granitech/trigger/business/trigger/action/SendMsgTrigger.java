@@ -81,8 +81,7 @@ public class SendMsgTrigger
             boolean sendEmail = ((type & SendMsg.TYPE_EMAIL) != 0);
             if (sendSMS || sendEmail) {
                 Map<String, Object> map = this.crudService.queryMapById(entityId, (String[]) sendMsg.getSendTo().toArray((Object[]) new String[sendMsg.getSendTo().size()]));
-                Set<String> toList = map.keySet().stream().map(key -> (map.get(key) == null) ? null : map.get(key).toString()).collect(Collectors.toSet());
-                String[] toArray = toList.toArray(new String[0]);
+                String[] toArray = map.keySet().stream().map(key -> (map.get(key) == null) ? null : map.get(key).toString()).distinct().toArray(String[]::new);
                 if (sendSMS) {
                     this.notificationService.sendSMS(String.join(",", toArray), content);
                 }

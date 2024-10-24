@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FunctionHelper {
-    private static Map<String, FunctionLambda> functionMap = new HashMap<>();
+    private static final Map<String, FunctionLambda> functionMap = new HashMap<>();
 
     public FunctionHelper() {
     }
